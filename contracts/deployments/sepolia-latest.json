@@ -1,0 +1,7 @@
+{
+  "network": "sepolia",
+  "deployer": "0x26e00b3bBA422c14c2037a13E5aeDc9FCE286fBe",
+  "indexFlowToken": "0x8fd5B57A42F4a434cd3acf772EB36FB712915547",
+  "indexFlowData": "0xcb58555c4faFB977689CcbAEA3b97299ba0C652D",
+  "indexFlowDao": "0xb01031685376Ac9403fb7e5878d49b03c72BF12D"
+}

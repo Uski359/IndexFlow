@@ -1,0 +1,27 @@
+{
+  "name": "@indexflow/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.ts --network sepolia",
+    "update:params": "hardhat run scripts/update-parameters.ts"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.1",
+    "indexflow": "file:.."
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@types/chai": "^4.3.10",
+    "@types/mocha": "^10.0.6",
+    "chai": "^4.3.10",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.8.1",
+    "hardhat": "^2.20.0",
+    "ts-node": "^10.9.2",
+    "typechain": "^8.2.0",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  background-color: #0f0f1a;
+}
+
+body {
+  @apply bg-[#0f0f1a] text-white min-h-screen;
+}
+
+.glass-panel {
+  @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-glass;
+}
+
+.link {
+  @apply text-brand hover:text-brand-light transition-colors duration-200;
+}

@@ -1,0 +1,31 @@
+# Node / TypeScript
+node_modules/
+dist/
+build/
+.next/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# Env files
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Hardhat
+artifacts/
+cache/
+
+# Python
+__pycache__/
+*.pyc
+
+# Misc
+.DS_Store
+Thumbs.db

@@ -1,0 +1,46 @@
+{
+  "name": "indexflow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "IndexFlow monorepo for decentralized data indexing and search protocol",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "contracts"
+  ],
+  "scripts": {
+    "test": "npm run lint && npm run test --prefix backend && npm run test:contracts",
+    "prepare": "husky install",
+    "lint": "npm run lint --workspace backend && npm run lint --workspace frontend",
+    "format": "prettier --write .",
+    "typecheck": "npm run typecheck --workspace backend && npm run typecheck --workspace frontend",
+    "dev:frontend": "npm --workspace frontend run dev",
+    "dev:backend": "npm --workspace backend run dev",
+    "build:frontend": "npm --workspace frontend run build",
+    "build:backend": "npm --workspace backend run build",
+    "test:contracts": "npm --workspace contracts run test",
+    "sync:contracts": "node scripts/sync-contracts.mjs"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.4",
+    "prettier": "^3.2.5",
+    "typescript": "~5.3.3"
+  },
+  "dependencies": {
+    "postgres-array": "^3.0.4"
+  },
+  "lint-staged": {
+    "frontend/**/*.{ts,tsx,js,jsx}": "npm run lint --prefix frontend -- --fix",
+    "backend/**/*.{ts,tsx,js,jsx}": "npm run lint --prefix backend -- --fix",
+    "contracts/**/*.{ts,tsx,js,jsx}": "npm run lint --prefix backend -- --fix"
+  }
+}
