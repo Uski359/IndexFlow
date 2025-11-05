@@ -1,0 +1,41 @@
+{
+  "name": "indexflow-poc",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "db:up": "docker compose up -d",
+    "migrate": "prisma migrate dev --name init",
+    "index": "ts-node-dev --respawn src/indexer.ts",
+    "api": "ts-node-dev --respawn src/server.ts",
+    "verifier": "ts-node-dev --transpile-only src/verifier.ts",
+    "coordinator": "ts-node-dev --transpile-only src/coordinator.ts",
+    "ai:query": "ts-node-dev --transpile-only src/aiQuery.ts",
+    "multi:fetch": "node multichain_fetch.js",
+    "demo": "npm run db:up && npm run migrate && concurrently \"npm run index\" \"npm run api\""
+  },
+  "dependencies": {
+    "@apollo/server": "^4.10.0",
+    "@graphql-tools/schema": "^10.0.12",
+    "@prisma/client": "^6.18.0",
+    "@langchain/openai": "^0.1.0",
+    "body-parser": "^1.20.3",
+    "concurrently": "^9.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ethers": "^5.7.2",
+    "express": "^4.19.2",
+    "graphql": "^16.9.0",
+    "langchain": "^0.2.20",
+    "node-sql-parser": "^5.3.1",
+    "pg": "^8.11.5"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.19.5",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.30",
+    "prisma": "^6.18.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.4.5"
+  }
+}

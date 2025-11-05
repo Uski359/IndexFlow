@@ -6,11 +6,14 @@
     "build": "hardhat compile",
     "test": "hardhat test",
     "deploy": "hardhat run scripts/deploy.ts --network sepolia",
-    "update:params": "hardhat run scripts/update-parameters.ts"
+    "update:params": "hardhat run scripts/update-parameters.ts",
+    "dev": "hardhat node",
+    "lint": "solhint 'src/**/*.sol'",
+    "typecheck": "tsc --noEmit",
+    "coverage": "hardhat coverage"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^5.0.1",
-    "indexflow": "file:.."
+    "@openzeppelin/contracts": "^5.0.1"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
@@ -20,6 +23,8 @@
     "dotenv": "^16.3.1",
     "ethers": "^6.8.1",
     "hardhat": "^2.20.0",
+    "solhint": "^3.6.2",
+    "solidity-coverage": "^0.8.13",
     "ts-node": "^10.9.2",
     "typechain": "^8.2.0",
     "typescript": "^5.3.3"

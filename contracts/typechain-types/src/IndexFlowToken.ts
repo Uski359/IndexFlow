@@ -23,52 +23,128 @@ import type {
   TypedContractMethod,
 } from "../common";
 
+export declare namespace IndexFlowToken {
+  export type DistributionStruct = {
+    foundersVesting: AddressLike;
+    daoTreasury: AddressLike;
+    communityAllocation: AddressLike;
+    airdropVault: AddressLike;
+    ecosystemReserve: AddressLike;
+  };
+
+  export type DistributionStructOutput = [
+    foundersVesting: string,
+    daoTreasury: string,
+    communityAllocation: string,
+    airdropVault: string,
+    ecosystemReserve: string
+  ] & {
+    foundersVesting: string;
+    daoTreasury: string;
+    communityAllocation: string;
+    airdropVault: string;
+    ecosystemReserve: string;
+  };
+}
+
+export declare namespace Checkpoints {
+  export type Checkpoint208Struct = {
+    _key: BigNumberish;
+    _value: BigNumberish;
+  };
+
+  export type Checkpoint208StructOutput = [_key: bigint, _value: bigint] & {
+    _key: bigint;
+    _value: bigint;
+  };
+}
+
 export interface IndexFlowTokenInterface extends Interface {
   getFunction(
     nameOrSignature:
-      | "BASIS_POINTS"
-      | "MIN_LOCK_DURATION"
+      | "CLOCK_MODE"
+      | "DEFAULT_ADMIN_ROLE"
+      | "DOMAIN_SEPARATOR"
+      | "MINTER_ROLE"
+      | "PAUSER_ROLE"
+      | "TOTAL_SUPPLY"
+      | "TREASURY_ROLE"
       | "allowance"
       | "approve"
-      | "apy"
       | "balanceOf"
-      | "claimRewards"
+      | "burn"
+      | "burnFrom"
+      | "checkpoints"
+      | "clock"
       | "decimals"
+      | "delegate"
+      | "delegateBySig"
+      | "delegates"
+      | "eip712Domain"
+      | "getPastTotalSupply"
+      | "getPastVotes"
+      | "getRoleAdmin"
+      | "getVotes"
+      | "grantRole"
+      | "hasRole"
+      | "mint"
       | "name"
-      | "owner"
-      | "pendingRewards"
-      | "renounceOwnership"
-      | "setApy"
-      | "slash"
-      | "stake"
-      | "stakes"
+      | "nonces"
+      | "numCheckpoints"
+      | "pause"
+      | "paused"
+      | "permit"
+      | "renounceRole"
+      | "revokeRole"
+      | "supportsInterface"
       | "symbol"
       | "totalSupply"
       | "transfer"
       | "transferFrom"
-      | "transferOwnership"
-      | "treasury"
-      | "unstake"
+      | "unpause"
   ): FunctionFragment;
 
   getEvent(
     nameOrSignatureOrTopic:
-      | "APYUpdated"
       | "Approval"
-      | "OwnershipTransferred"
-      | "RewardsClaimed"
-      | "Slashed"
-      | "Staked"
+      | "DelegateChanged"
+      | "DelegateVotesChanged"
+      | "DistributionCompleted"
+      | "EIP712DomainChanged"
+      | "Paused"
+      | "RoleAdminChanged"
+      | "RoleGranted"
+      | "RoleRevoked"
       | "Transfer"
-      | "Unstaked"
+      | "Unpaused"
   ): EventFragment;
 
   encodeFunctionData(
-    functionFragment: "BASIS_POINTS",
+    functionFragment: "CLOCK_MODE",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "MIN_LOCK_DURATION",
+    functionFragment: "DEFAULT_ADMIN_ROLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "DOMAIN_SEPARATOR",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "MINTER_ROLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "PAUSER_ROLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "TOTAL_SUPPLY",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "TREASURY_ROLE",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -79,39 +155,104 @@ export interface IndexFlowTokenInterface extends Interface {
     functionFragment: "approve",
     values: [AddressLike, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "apy", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "balanceOf",
     values: [AddressLike]
   ): string;
+  encodeFunctionData(functionFragment: "burn", values: [BigNumberish]): string;
   encodeFunctionData(
-    functionFragment: "claimRewards",
-    values?: undefined
+    functionFragment: "burnFrom",
+    values: [AddressLike, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
-  encodeFunctionData(functionFragment: "name", values?: undefined): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "pendingRewards",
+    functionFragment: "checkpoints",
+    values: [AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "clock", values?: undefined): string;
+  encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "delegate",
     values: [AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "renounceOwnership",
+    functionFragment: "delegateBySig",
+    values: [
+      AddressLike,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BytesLike,
+      BytesLike
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "delegates",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "eip712Domain",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "setApy",
-    values: [BigNumberish, BigNumberish]
+    functionFragment: "getPastTotalSupply",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "slash",
-    values: [AddressLike, BigNumberish, AddressLike]
+    functionFragment: "getPastVotes",
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "stake",
-    values: [BigNumberish, BigNumberish, BigNumberish]
+    functionFragment: "getRoleAdmin",
+    values: [BytesLike]
   ): string;
-  encodeFunctionData(functionFragment: "stakes", values: [AddressLike]): string;
+  encodeFunctionData(
+    functionFragment: "getVotes",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "grantRole",
+    values: [BytesLike, AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "hasRole",
+    values: [BytesLike, AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mint",
+    values: [AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "name", values?: undefined): string;
+  encodeFunctionData(functionFragment: "nonces", values: [AddressLike]): string;
+  encodeFunctionData(
+    functionFragment: "numCheckpoints",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(functionFragment: "pause", values?: undefined): string;
+  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "permit",
+    values: [
+      AddressLike,
+      AddressLike,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BytesLike,
+      BytesLike
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "renounceRole",
+    values: [BytesLike, AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "revokeRole",
+    values: [BytesLike, AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "supportsInterface",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "totalSupply",
@@ -125,47 +266,88 @@ export interface IndexFlowTokenInterface extends Interface {
     functionFragment: "transferFrom",
     values: [AddressLike, AddressLike, BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "transferOwnership",
-    values: [AddressLike]
-  ): string;
-  encodeFunctionData(functionFragment: "treasury", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "unstake",
-    values: [BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
 
+  decodeFunctionResult(functionFragment: "CLOCK_MODE", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "BASIS_POINTS",
+    functionFragment: "DEFAULT_ADMIN_ROLE",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "MIN_LOCK_DURATION",
+    functionFragment: "DOMAIN_SEPARATOR",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "MINTER_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "PAUSER_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "TOTAL_SUPPLY",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "TREASURY_ROLE",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "apy", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "burnFrom", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "claimRewards",
+    functionFragment: "checkpoints",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "clock", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "delegate", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "delegateBySig",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "delegates", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "eip712Domain",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getPastTotalSupply",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getPastVotes",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRoleAdmin",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "getVotes", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "nonces", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "pendingRewards",
+    functionFragment: "numCheckpoints",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "permit", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "renounceOwnership",
+    functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "setApy", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "slash", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "stake", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "stakes", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "supportsInterface",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
@@ -176,25 +358,7 @@ export interface IndexFlowTokenInterface extends Interface {
     functionFragment: "transferFrom",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "transferOwnership",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "treasury", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "unstake", data: BytesLike): Result;
-}
-
-export namespace APYUpdatedEvent {
-  export type InputTuple = [mode: BigNumberish, basisPoints: BigNumberish];
-  export type OutputTuple = [mode: bigint, basisPoints: bigint];
-  export interface OutputObject {
-    mode: bigint;
-    basisPoints: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
+  decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
 }
 
 export namespace ApprovalEvent {
@@ -215,47 +379,21 @@ export namespace ApprovalEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace OwnershipTransferredEvent {
-  export type InputTuple = [previousOwner: AddressLike, newOwner: AddressLike];
-  export type OutputTuple = [previousOwner: string, newOwner: string];
-  export interface OutputObject {
-    previousOwner: string;
-    newOwner: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace RewardsClaimedEvent {
-  export type InputTuple = [account: AddressLike, amount: BigNumberish];
-  export type OutputTuple = [account: string, amount: bigint];
-  export interface OutputObject {
-    account: string;
-    amount: bigint;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
-}
-
-export namespace SlashedEvent {
+export namespace DelegateChangedEvent {
   export type InputTuple = [
-    account: AddressLike,
-    amount: BigNumberish,
-    recipient: AddressLike
+    delegator: AddressLike,
+    fromDelegate: AddressLike,
+    toDelegate: AddressLike
   ];
   export type OutputTuple = [
-    account: string,
-    amount: bigint,
-    recipient: string
+    delegator: string,
+    fromDelegate: string,
+    toDelegate: string
   ];
   export interface OutputObject {
-    account: string;
-    amount: bigint;
-    recipient: string;
+    delegator: string;
+    fromDelegate: string;
+    toDelegate: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -263,24 +401,120 @@ export namespace SlashedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace StakedEvent {
+export namespace DelegateVotesChangedEvent {
   export type InputTuple = [
-    account: AddressLike,
-    amount: BigNumberish,
-    mode: BigNumberish,
-    lockUntil: BigNumberish
+    delegate: AddressLike,
+    previousVotes: BigNumberish,
+    newVotes: BigNumberish
   ];
   export type OutputTuple = [
-    account: string,
-    amount: bigint,
-    mode: bigint,
-    lockUntil: bigint
+    delegate: string,
+    previousVotes: bigint,
+    newVotes: bigint
   ];
   export interface OutputObject {
+    delegate: string;
+    previousVotes: bigint;
+    newVotes: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace DistributionCompletedEvent {
+  export type InputTuple = [
+    executor: AddressLike,
+    distribution: IndexFlowToken.DistributionStruct
+  ];
+  export type OutputTuple = [
+    executor: string,
+    distribution: IndexFlowToken.DistributionStructOutput
+  ];
+  export interface OutputObject {
+    executor: string;
+    distribution: IndexFlowToken.DistributionStructOutput;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace EIP712DomainChangedEvent {
+  export type InputTuple = [];
+  export type OutputTuple = [];
+  export interface OutputObject {}
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace PausedEvent {
+  export type InputTuple = [account: AddressLike];
+  export type OutputTuple = [account: string];
+  export interface OutputObject {
     account: string;
-    amount: bigint;
-    mode: bigint;
-    lockUntil: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace RoleAdminChangedEvent {
+  export type InputTuple = [
+    role: BytesLike,
+    previousAdminRole: BytesLike,
+    newAdminRole: BytesLike
+  ];
+  export type OutputTuple = [
+    role: string,
+    previousAdminRole: string,
+    newAdminRole: string
+  ];
+  export interface OutputObject {
+    role: string;
+    previousAdminRole: string;
+    newAdminRole: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace RoleGrantedEvent {
+  export type InputTuple = [
+    role: BytesLike,
+    account: AddressLike,
+    sender: AddressLike
+  ];
+  export type OutputTuple = [role: string, account: string, sender: string];
+  export interface OutputObject {
+    role: string;
+    account: string;
+    sender: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace RoleRevokedEvent {
+  export type InputTuple = [
+    role: BytesLike,
+    account: AddressLike,
+    sender: AddressLike
+  ];
+  export type OutputTuple = [role: string, account: string, sender: string];
+  export interface OutputObject {
+    role: string;
+    account: string;
+    sender: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -306,12 +540,11 @@ export namespace TransferEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace UnstakedEvent {
-  export type InputTuple = [account: AddressLike, amount: BigNumberish];
-  export type OutputTuple = [account: string, amount: bigint];
+export namespace UnpausedEvent {
+  export type InputTuple = [account: AddressLike];
+  export type OutputTuple = [account: string];
   export interface OutputObject {
     account: string;
-    amount: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -362,9 +595,19 @@ export interface IndexFlowToken extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  BASIS_POINTS: TypedContractMethod<[], [bigint], "view">;
+  CLOCK_MODE: TypedContractMethod<[], [string], "view">;
 
-  MIN_LOCK_DURATION: TypedContractMethod<[], [bigint], "view">;
+  DEFAULT_ADMIN_ROLE: TypedContractMethod<[], [string], "view">;
+
+  DOMAIN_SEPARATOR: TypedContractMethod<[], [string], "view">;
+
+  MINTER_ROLE: TypedContractMethod<[], [string], "view">;
+
+  PAUSER_ROLE: TypedContractMethod<[], [string], "view">;
+
+  TOTAL_SUPPLY: TypedContractMethod<[], [bigint], "view">;
+
+  TREASURY_ROLE: TypedContractMethod<[], [string], "view">;
 
   allowance: TypedContractMethod<
     [owner: AddressLike, spender: AddressLike],
@@ -378,51 +621,132 @@ export interface IndexFlowToken extends BaseContract {
     "nonpayable"
   >;
 
-  apy: TypedContractMethod<[mode: BigNumberish], [bigint], "view">;
-
   balanceOf: TypedContractMethod<[account: AddressLike], [bigint], "view">;
 
-  claimRewards: TypedContractMethod<[], [void], "nonpayable">;
+  burn: TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
+
+  burnFrom: TypedContractMethod<
+    [account: AddressLike, amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  checkpoints: TypedContractMethod<
+    [account: AddressLike, pos: BigNumberish],
+    [Checkpoints.Checkpoint208StructOutput],
+    "view"
+  >;
+
+  clock: TypedContractMethod<[], [bigint], "view">;
 
   decimals: TypedContractMethod<[], [bigint], "view">;
 
-  name: TypedContractMethod<[], [string], "view">;
+  delegate: TypedContractMethod<[delegatee: AddressLike], [void], "nonpayable">;
 
-  owner: TypedContractMethod<[], [string], "view">;
-
-  pendingRewards: TypedContractMethod<[account: AddressLike], [bigint], "view">;
-
-  renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
-
-  setApy: TypedContractMethod<
-    [mode: BigNumberish, basisPoints: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-
-  slash: TypedContractMethod<
-    [account: AddressLike, penaltyBps: BigNumberish, recipient: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-
-  stake: TypedContractMethod<
-    [amount: BigNumberish, lockDuration: BigNumberish, mode: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-
-  stakes: TypedContractMethod<
-    [arg0: AddressLike],
+  delegateBySig: TypedContractMethod<
     [
-      [bigint, bigint, bigint, bigint, bigint] & {
-        amount: bigint;
-        rewardAccrued: bigint;
-        lastUpdated: bigint;
-        lockUntil: bigint;
-        mode: bigint;
+      delegatee: AddressLike,
+      nonce: BigNumberish,
+      expiry: BigNumberish,
+      v: BigNumberish,
+      r: BytesLike,
+      s: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  delegates: TypedContractMethod<[account: AddressLike], [string], "view">;
+
+  eip712Domain: TypedContractMethod<
+    [],
+    [
+      [string, string, string, bigint, string, string, bigint[]] & {
+        fields: string;
+        name: string;
+        version: string;
+        chainId: bigint;
+        verifyingContract: string;
+        salt: string;
+        extensions: bigint[];
       }
     ],
+    "view"
+  >;
+
+  getPastTotalSupply: TypedContractMethod<
+    [timepoint: BigNumberish],
+    [bigint],
+    "view"
+  >;
+
+  getPastVotes: TypedContractMethod<
+    [account: AddressLike, timepoint: BigNumberish],
+    [bigint],
+    "view"
+  >;
+
+  getRoleAdmin: TypedContractMethod<[role: BytesLike], [string], "view">;
+
+  getVotes: TypedContractMethod<[account: AddressLike], [bigint], "view">;
+
+  grantRole: TypedContractMethod<
+    [role: BytesLike, account: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
+  hasRole: TypedContractMethod<
+    [role: BytesLike, account: AddressLike],
+    [boolean],
+    "view"
+  >;
+
+  mint: TypedContractMethod<
+    [to: AddressLike, amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  name: TypedContractMethod<[], [string], "view">;
+
+  nonces: TypedContractMethod<[owner: AddressLike], [bigint], "view">;
+
+  numCheckpoints: TypedContractMethod<[account: AddressLike], [bigint], "view">;
+
+  pause: TypedContractMethod<[], [void], "nonpayable">;
+
+  paused: TypedContractMethod<[], [boolean], "view">;
+
+  permit: TypedContractMethod<
+    [
+      owner: AddressLike,
+      spender: AddressLike,
+      value: BigNumberish,
+      deadline: BigNumberish,
+      v: BigNumberish,
+      r: BytesLike,
+      s: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  renounceRole: TypedContractMethod<
+    [role: BytesLike, callerConfirmation: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
+  revokeRole: TypedContractMethod<
+    [role: BytesLike, account: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
+  supportsInterface: TypedContractMethod<
+    [interfaceId: BytesLike],
+    [boolean],
     "view"
   >;
 
@@ -442,26 +766,33 @@ export interface IndexFlowToken extends BaseContract {
     "nonpayable"
   >;
 
-  transferOwnership: TypedContractMethod<
-    [newOwner: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-
-  treasury: TypedContractMethod<[], [string], "view">;
-
-  unstake: TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
+  unpause: TypedContractMethod<[], [void], "nonpayable">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
   getFunction(
-    nameOrSignature: "BASIS_POINTS"
+    nameOrSignature: "CLOCK_MODE"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "DEFAULT_ADMIN_ROLE"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "DOMAIN_SEPARATOR"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "MINTER_ROLE"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "PAUSER_ROLE"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "TOTAL_SUPPLY"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "MIN_LOCK_DURATION"
-  ): TypedContractMethod<[], [bigint], "view">;
+    nameOrSignature: "TREASURY_ROLE"
+  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "allowance"
   ): TypedContractMethod<
@@ -477,65 +808,152 @@ export interface IndexFlowToken extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "apy"
-  ): TypedContractMethod<[mode: BigNumberish], [bigint], "view">;
-  getFunction(
     nameOrSignature: "balanceOf"
   ): TypedContractMethod<[account: AddressLike], [bigint], "view">;
   getFunction(
-    nameOrSignature: "claimRewards"
-  ): TypedContractMethod<[], [void], "nonpayable">;
+    nameOrSignature: "burn"
+  ): TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "burnFrom"
+  ): TypedContractMethod<
+    [account: AddressLike, amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "checkpoints"
+  ): TypedContractMethod<
+    [account: AddressLike, pos: BigNumberish],
+    [Checkpoints.Checkpoint208StructOutput],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "clock"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "decimals"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "name"
-  ): TypedContractMethod<[], [string], "view">;
+    nameOrSignature: "delegate"
+  ): TypedContractMethod<[delegatee: AddressLike], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "owner"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "pendingRewards"
-  ): TypedContractMethod<[account: AddressLike], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "renounceOwnership"
-  ): TypedContractMethod<[], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "setApy"
+    nameOrSignature: "delegateBySig"
   ): TypedContractMethod<
-    [mode: BigNumberish, basisPoints: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "slash"
-  ): TypedContractMethod<
-    [account: AddressLike, penaltyBps: BigNumberish, recipient: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "stake"
-  ): TypedContractMethod<
-    [amount: BigNumberish, lockDuration: BigNumberish, mode: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "stakes"
-  ): TypedContractMethod<
-    [arg0: AddressLike],
     [
-      [bigint, bigint, bigint, bigint, bigint] & {
-        amount: bigint;
-        rewardAccrued: bigint;
-        lastUpdated: bigint;
-        lockUntil: bigint;
-        mode: bigint;
+      delegatee: AddressLike,
+      nonce: BigNumberish,
+      expiry: BigNumberish,
+      v: BigNumberish,
+      r: BytesLike,
+      s: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "delegates"
+  ): TypedContractMethod<[account: AddressLike], [string], "view">;
+  getFunction(
+    nameOrSignature: "eip712Domain"
+  ): TypedContractMethod<
+    [],
+    [
+      [string, string, string, bigint, string, string, bigint[]] & {
+        fields: string;
+        name: string;
+        version: string;
+        chainId: bigint;
+        verifyingContract: string;
+        salt: string;
+        extensions: bigint[];
       }
     ],
     "view"
   >;
+  getFunction(
+    nameOrSignature: "getPastTotalSupply"
+  ): TypedContractMethod<[timepoint: BigNumberish], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getPastVotes"
+  ): TypedContractMethod<
+    [account: AddressLike, timepoint: BigNumberish],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getRoleAdmin"
+  ): TypedContractMethod<[role: BytesLike], [string], "view">;
+  getFunction(
+    nameOrSignature: "getVotes"
+  ): TypedContractMethod<[account: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "grantRole"
+  ): TypedContractMethod<
+    [role: BytesLike, account: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "hasRole"
+  ): TypedContractMethod<
+    [role: BytesLike, account: AddressLike],
+    [boolean],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "mint"
+  ): TypedContractMethod<
+    [to: AddressLike, amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "name"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "nonces"
+  ): TypedContractMethod<[owner: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "numCheckpoints"
+  ): TypedContractMethod<[account: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "pause"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "paused"
+  ): TypedContractMethod<[], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "permit"
+  ): TypedContractMethod<
+    [
+      owner: AddressLike,
+      spender: AddressLike,
+      value: BigNumberish,
+      deadline: BigNumberish,
+      v: BigNumberish,
+      r: BytesLike,
+      s: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "renounceRole"
+  ): TypedContractMethod<
+    [role: BytesLike, callerConfirmation: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "revokeRole"
+  ): TypedContractMethod<
+    [role: BytesLike, account: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "supportsInterface"
+  ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
   getFunction(
     nameOrSignature: "symbol"
   ): TypedContractMethod<[], [string], "view">;
@@ -557,22 +975,9 @@ export interface IndexFlowToken extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "transferOwnership"
-  ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "treasury"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "unstake"
-  ): TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
+    nameOrSignature: "unpause"
+  ): TypedContractMethod<[], [void], "nonpayable">;
 
-  getEvent(
-    key: "APYUpdated"
-  ): TypedContractEvent<
-    APYUpdatedEvent.InputTuple,
-    APYUpdatedEvent.OutputTuple,
-    APYUpdatedEvent.OutputObject
-  >;
   getEvent(
     key: "Approval"
   ): TypedContractEvent<
@@ -581,32 +986,60 @@ export interface IndexFlowToken extends BaseContract {
     ApprovalEvent.OutputObject
   >;
   getEvent(
-    key: "OwnershipTransferred"
+    key: "DelegateChanged"
   ): TypedContractEvent<
-    OwnershipTransferredEvent.InputTuple,
-    OwnershipTransferredEvent.OutputTuple,
-    OwnershipTransferredEvent.OutputObject
+    DelegateChangedEvent.InputTuple,
+    DelegateChangedEvent.OutputTuple,
+    DelegateChangedEvent.OutputObject
   >;
   getEvent(
-    key: "RewardsClaimed"
+    key: "DelegateVotesChanged"
   ): TypedContractEvent<
-    RewardsClaimedEvent.InputTuple,
-    RewardsClaimedEvent.OutputTuple,
-    RewardsClaimedEvent.OutputObject
+    DelegateVotesChangedEvent.InputTuple,
+    DelegateVotesChangedEvent.OutputTuple,
+    DelegateVotesChangedEvent.OutputObject
   >;
   getEvent(
-    key: "Slashed"
+    key: "DistributionCompleted"
   ): TypedContractEvent<
-    SlashedEvent.InputTuple,
-    SlashedEvent.OutputTuple,
-    SlashedEvent.OutputObject
+    DistributionCompletedEvent.InputTuple,
+    DistributionCompletedEvent.OutputTuple,
+    DistributionCompletedEvent.OutputObject
   >;
   getEvent(
-    key: "Staked"
+    key: "EIP712DomainChanged"
   ): TypedContractEvent<
-    StakedEvent.InputTuple,
-    StakedEvent.OutputTuple,
-    StakedEvent.OutputObject
+    EIP712DomainChangedEvent.InputTuple,
+    EIP712DomainChangedEvent.OutputTuple,
+    EIP712DomainChangedEvent.OutputObject
+  >;
+  getEvent(
+    key: "Paused"
+  ): TypedContractEvent<
+    PausedEvent.InputTuple,
+    PausedEvent.OutputTuple,
+    PausedEvent.OutputObject
+  >;
+  getEvent(
+    key: "RoleAdminChanged"
+  ): TypedContractEvent<
+    RoleAdminChangedEvent.InputTuple,
+    RoleAdminChangedEvent.OutputTuple,
+    RoleAdminChangedEvent.OutputObject
+  >;
+  getEvent(
+    key: "RoleGranted"
+  ): TypedContractEvent<
+    RoleGrantedEvent.InputTuple,
+    RoleGrantedEvent.OutputTuple,
+    RoleGrantedEvent.OutputObject
+  >;
+  getEvent(
+    key: "RoleRevoked"
+  ): TypedContractEvent<
+    RoleRevokedEvent.InputTuple,
+    RoleRevokedEvent.OutputTuple,
+    RoleRevokedEvent.OutputObject
   >;
   getEvent(
     key: "Transfer"
@@ -616,25 +1049,14 @@ export interface IndexFlowToken extends BaseContract {
     TransferEvent.OutputObject
   >;
   getEvent(
-    key: "Unstaked"
+    key: "Unpaused"
   ): TypedContractEvent<
-    UnstakedEvent.InputTuple,
-    UnstakedEvent.OutputTuple,
-    UnstakedEvent.OutputObject
+    UnpausedEvent.InputTuple,
+    UnpausedEvent.OutputTuple,
+    UnpausedEvent.OutputObject
   >;
 
   filters: {
-    "APYUpdated(uint8,uint256)": TypedContractEvent<
-      APYUpdatedEvent.InputTuple,
-      APYUpdatedEvent.OutputTuple,
-      APYUpdatedEvent.OutputObject
-    >;
-    APYUpdated: TypedContractEvent<
-      APYUpdatedEvent.InputTuple,
-      APYUpdatedEvent.OutputTuple,
-      APYUpdatedEvent.OutputObject
-    >;
-
     "Approval(address,address,uint256)": TypedContractEvent<
       ApprovalEvent.InputTuple,
       ApprovalEvent.OutputTuple,
@@ -646,48 +1068,92 @@ export interface IndexFlowToken extends BaseContract {
       ApprovalEvent.OutputObject
     >;
 
-    "OwnershipTransferred(address,address)": TypedContractEvent<
-      OwnershipTransferredEvent.InputTuple,
-      OwnershipTransferredEvent.OutputTuple,
-      OwnershipTransferredEvent.OutputObject
+    "DelegateChanged(address,address,address)": TypedContractEvent<
+      DelegateChangedEvent.InputTuple,
+      DelegateChangedEvent.OutputTuple,
+      DelegateChangedEvent.OutputObject
     >;
-    OwnershipTransferred: TypedContractEvent<
-      OwnershipTransferredEvent.InputTuple,
-      OwnershipTransferredEvent.OutputTuple,
-      OwnershipTransferredEvent.OutputObject
-    >;
-
-    "RewardsClaimed(address,uint256)": TypedContractEvent<
-      RewardsClaimedEvent.InputTuple,
-      RewardsClaimedEvent.OutputTuple,
-      RewardsClaimedEvent.OutputObject
-    >;
-    RewardsClaimed: TypedContractEvent<
-      RewardsClaimedEvent.InputTuple,
-      RewardsClaimedEvent.OutputTuple,
-      RewardsClaimedEvent.OutputObject
+    DelegateChanged: TypedContractEvent<
+      DelegateChangedEvent.InputTuple,
+      DelegateChangedEvent.OutputTuple,
+      DelegateChangedEvent.OutputObject
     >;
 
-    "Slashed(address,uint256,address)": TypedContractEvent<
-      SlashedEvent.InputTuple,
-      SlashedEvent.OutputTuple,
-      SlashedEvent.OutputObject
+    "DelegateVotesChanged(address,uint256,uint256)": TypedContractEvent<
+      DelegateVotesChangedEvent.InputTuple,
+      DelegateVotesChangedEvent.OutputTuple,
+      DelegateVotesChangedEvent.OutputObject
     >;
-    Slashed: TypedContractEvent<
-      SlashedEvent.InputTuple,
-      SlashedEvent.OutputTuple,
-      SlashedEvent.OutputObject
+    DelegateVotesChanged: TypedContractEvent<
+      DelegateVotesChangedEvent.InputTuple,
+      DelegateVotesChangedEvent.OutputTuple,
+      DelegateVotesChangedEvent.OutputObject
     >;
 
-    "Staked(address,uint256,uint8,uint256)": TypedContractEvent<
-      StakedEvent.InputTuple,
-      StakedEvent.OutputTuple,
-      StakedEvent.OutputObject
+    "DistributionCompleted(address,tuple)": TypedContractEvent<
+      DistributionCompletedEvent.InputTuple,
+      DistributionCompletedEvent.OutputTuple,
+      DistributionCompletedEvent.OutputObject
     >;
-    Staked: TypedContractEvent<
-      StakedEvent.InputTuple,
-      StakedEvent.OutputTuple,
-      StakedEvent.OutputObject
+    DistributionCompleted: TypedContractEvent<
+      DistributionCompletedEvent.InputTuple,
+      DistributionCompletedEvent.OutputTuple,
+      DistributionCompletedEvent.OutputObject
+    >;
+
+    "EIP712DomainChanged()": TypedContractEvent<
+      EIP712DomainChangedEvent.InputTuple,
+      EIP712DomainChangedEvent.OutputTuple,
+      EIP712DomainChangedEvent.OutputObject
+    >;
+    EIP712DomainChanged: TypedContractEvent<
+      EIP712DomainChangedEvent.InputTuple,
+      EIP712DomainChangedEvent.OutputTuple,
+      EIP712DomainChangedEvent.OutputObject
+    >;
+
+    "Paused(address)": TypedContractEvent<
+      PausedEvent.InputTuple,
+      PausedEvent.OutputTuple,
+      PausedEvent.OutputObject
+    >;
+    Paused: TypedContractEvent<
+      PausedEvent.InputTuple,
+      PausedEvent.OutputTuple,
+      PausedEvent.OutputObject
+    >;
+
+    "RoleAdminChanged(bytes32,bytes32,bytes32)": TypedContractEvent<
+      RoleAdminChangedEvent.InputTuple,
+      RoleAdminChangedEvent.OutputTuple,
+      RoleAdminChangedEvent.OutputObject
+    >;
+    RoleAdminChanged: TypedContractEvent<
+      RoleAdminChangedEvent.InputTuple,
+      RoleAdminChangedEvent.OutputTuple,
+      RoleAdminChangedEvent.OutputObject
+    >;
+
+    "RoleGranted(bytes32,address,address)": TypedContractEvent<
+      RoleGrantedEvent.InputTuple,
+      RoleGrantedEvent.OutputTuple,
+      RoleGrantedEvent.OutputObject
+    >;
+    RoleGranted: TypedContractEvent<
+      RoleGrantedEvent.InputTuple,
+      RoleGrantedEvent.OutputTuple,
+      RoleGrantedEvent.OutputObject
+    >;
+
+    "RoleRevoked(bytes32,address,address)": TypedContractEvent<
+      RoleRevokedEvent.InputTuple,
+      RoleRevokedEvent.OutputTuple,
+      RoleRevokedEvent.OutputObject
+    >;
+    RoleRevoked: TypedContractEvent<
+      RoleRevokedEvent.InputTuple,
+      RoleRevokedEvent.OutputTuple,
+      RoleRevokedEvent.OutputObject
     >;
 
     "Transfer(address,address,uint256)": TypedContractEvent<
@@ -701,15 +1167,15 @@ export interface IndexFlowToken extends BaseContract {
       TransferEvent.OutputObject
     >;
 
-    "Unstaked(address,uint256)": TypedContractEvent<
-      UnstakedEvent.InputTuple,
-      UnstakedEvent.OutputTuple,
-      UnstakedEvent.OutputObject
+    "Unpaused(address)": TypedContractEvent<
+      UnpausedEvent.InputTuple,
+      UnpausedEvent.OutputTuple,
+      UnpausedEvent.OutputObject
     >;
-    Unstaked: TypedContractEvent<
-      UnstakedEvent.InputTuple,
-      UnstakedEvent.OutputTuple,
-      UnstakedEvent.OutputObject
+    Unpaused: TypedContractEvent<
+      UnpausedEvent.InputTuple,
+      UnpausedEvent.OutputTuple,
+      UnpausedEvent.OutputObject
     >;
   };
 }

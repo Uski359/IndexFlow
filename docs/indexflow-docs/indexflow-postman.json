@@ -1,0 +1,159 @@
+{
+  "info": {
+    "_postman_id": "45fb1c1b-3d2e-4f4d-8ee8-7e2fd8a3c6e1",
+    "name": "IndexFlow API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection covering the IndexFlow REST and GraphQL endpoints (/health, /proof/sql, /graphql)."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health (REST)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Proof of SQL (REST)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"SELECT attestor, merkle_root FROM attestations WHERE batch_id = 'batch-5678000-5678100';\",\n  \"requester\": \"validator-007\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/proof/sql",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "proof",
+            "sql"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GraphQL - Health",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"query Health { health { lastIndexedBlock safeBlockNumber lastIndexedHash updatedAt } }\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/graphql",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "graphql"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GraphQL - Latest Block Snapshot",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"query LatestBlock { latestBlock { number hash timestamp parentHash transactions(limit: 5) { items { hash from to value } nextCursor } transfers(limit: 5) { items { id token from to value } nextCursor } } }\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/graphql",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "graphql"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GraphQL - Proof of Indexing",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"query ProofOfIndexing($batchId: String!) { proofOfIndexing(batchId: $batchId) { batchId poiMerkleRoot poiLeafCount safeBlockNumber totalTransfers totalTransactions computedAt } }\",\n  \"variables\": {\n    \"batchId\": \"batch-5678000-5678100\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/graphql",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "graphql"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

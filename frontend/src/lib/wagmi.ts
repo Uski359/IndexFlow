@@ -1,0 +1,55 @@
+"use client";
+
+import { configureChains, createConfig } from "wagmi";
+import { sepolia } from "wagmi/chains";
+import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { env } from "@/lib/env";
+
+const projectId = env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "indexflow-demo";
+const rpcUrl = env.NEXT_PUBLIC_RPC_URL ?? sepolia.rpcUrls.default.http[0];
+
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [sepolia],
+  [
+    jsonRpcProvider({
+      rpc: () => ({ http: rpcUrl })
+    })
+  ]
+);
+
+export { chains };
+
+export const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors: [
+    new InjectedConnector({
+      chains,
+      options: { shimDisconnect: true }
+    }),
+    new WalletConnectConnector({
+      chains,
+      options: {
+        projectId,
+        metadata: {
+          name: "IndexFlow",
+          description: "IndexFlow staking dashboard",
+          url: "https://indexflow.io",
+          icons: ["https://avatars.githubusercontent.com/u/86017344?s=200&v=4"]
+        }
+      }
+    }),
+    new CoinbaseWalletConnector({
+      chains,
+      options: {
+        appName: "IndexFlow",
+        jsonRpcUrl: rpcUrl
+      }
+    })
+  ],
+  publicClient,
+  webSocketPublicClient,
+  ssr: true
+});

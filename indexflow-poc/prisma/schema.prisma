@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Block {
+  chainId   String   @default("sepolia")
+  number    Int
+  hash      String
+  parentHash String
+  timestamp BigInt   @db.BigInt
+  createdAt DateTime @default(now())
+
+  transactions Transaction[]
+  transfers    Erc20Transfer[] @relation("BlockTransfers")
+
+  @@id([chainId, number])
+  @@unique([chainId, hash])
+  @@index([chainId, createdAt])
+}
+
+model Transaction {
+  chainId     String   @default("sepolia")
+  hash        String
+  blockNumber Int
+  from        String
+  to          String?
+  value       String
+  createdAt   DateTime @default(now())
+
+  block     Block          @relation(fields: [chainId, blockNumber], references: [chainId, number], onDelete: Cascade)
+  transfers Erc20Transfer[]
+
+  @@id([chainId, hash])
+  @@index([chainId, blockNumber])
+}
+
+model Erc20Transfer {
+  chainId     String   @default("sepolia")
+  id          String
+  txHash      String
+  logIndex    Int
+  blockNumber Int
+  token       String
+  from        String
+  to          String
+  value       String
+  createdAt   DateTime @default(now())
+
+  transaction Transaction @relation(fields: [chainId, txHash], references: [chainId, hash], onDelete: Cascade)
+  block       Block       @relation("BlockTransfers", fields: [chainId, blockNumber], references: [chainId, number], onDelete: Cascade)
+
+  @@id([chainId, id])
+  @@index([chainId, blockNumber])
+  @@index([chainId, txHash])
+  @@index([chainId, token])
+  @@index([chainId, from])
+  @@index([chainId, to])
+}
+
+model IndexedBatch {
+  chainId          String   @default("sepolia")
+  id               String
+  startBlock       Int
+  endBlock         Int
+  merkleRoot       String
+  totalBlocks      Int
+  totalTransactions Int
+  totalTransfers   Int
+  proverAddress    String?
+  proverSignature  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  attestations BatchAttestation[]
+
+  @@id([chainId, id])
+  @@unique([chainId, startBlock, endBlock])
+  @@index([chainId, createdAt])
+}
+
+enum AttestationStatus {
+  VALID
+  INVALID
+}
+
+model BatchAttestation {
+  chainId    String             @default("sepolia")
+  id         String
+  batchId    String
+  attestor   String
+  merkleRoot String
+  status     AttestationStatus
+  signature  String?
+  createdAt  DateTime           @default(now())
+
+  batch IndexedBatch @relation(fields: [chainId, batchId], references: [chainId, id], onDelete: Cascade)
+
+  @@id([chainId, id])
+  @@index([chainId, batchId])
+  @@index([chainId, attestor])
+}

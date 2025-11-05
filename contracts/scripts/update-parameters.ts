@@ -1,66 +1,80 @@
-import { readFileSync, existsSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 import { ethers, network } from "hardhat";
 
 function getArg(key: string): string | undefined {
-  const index = process.argv.indexOf(`--${key}`);
-  if (index === -1 || index + 1 >= process.argv.length) {
+  const flag = `--${key}`;
+  const index = process.argv.indexOf(flag);
+  if (index === -1) {
     return undefined;
+  }
+  if (index + 1 >= process.argv.length) {
+    throw new Error(`Flag ${flag} requires a value`);
   }
   return process.argv[index + 1];
 }
 
-function requiredArg(key: string, fallback?: string) {
-  const value = getArg(key) ?? fallback;
-  if (!value) {
-    console.error(`Missing required argument --${key}`);
-    process.exit(1);
-  }
-  return value;
-}
-
 async function main() {
   const networkName = network.name;
-  const baseRewardInput = requiredArg("baseReward");
-  const challengeBondInput = requiredArg("challengeBond");
-  const quorumInput = requiredArg("validatorQuorumBps");
-  const slashInput = requiredArg("slashPenaltyBps");
-
-  const baseReward = ethers.parseEther(baseRewardInput);
-  const challengeBond = ethers.parseEther(challengeBondInput);
-  const validatorQuorumBps = BigInt(quorumInput);
-  const slashPenaltyBps = BigInt(slashInput);
-
   const deploymentsDir = join(__dirname, "..", "deployments");
   const networkDeployment = join(deploymentsDir, `${networkName}-latest.json`);
   const deploymentFile = existsSync(networkDeployment)
     ? networkDeployment
     : join(deploymentsDir, "latest.json");
-  const latest = JSON.parse(readFileSync(deploymentFile, "utf8"));
-  console.log(`Using deployment file: ${deploymentFile}`);
 
-  const daoAddress = latest.indexFlowDao as string;
-  if (!daoAddress) {
-    throw new Error(`DAO address not found in deployments for network ${networkName}`);
+  const latest = JSON.parse(readFileSync(deploymentFile, "utf8"));
+  const stakingAddress = latest.staking as string | undefined;
+  const rewardsAddress = latest.rewards as string | undefined;
+
+  if (!stakingAddress || !rewardsAddress) {
+    throw new Error(`Deployment data missing staking or rewards contract for network ${networkName}`);
   }
 
   const [signer] = await ethers.getSigners();
-  const dao = await ethers.getContractAt("IndexFlowDAO", daoAddress, signer);
+  console.log(`Updating contracts on ${networkName} with signer ${await signer.getAddress()}`);
 
-  console.log(`Updating protocol parameters on ${networkName} using signer ${await signer.getAddress()}`);
-  console.log(`Base reward: ${baseRewardInput} ETH`);
-  console.log(`Challenge bond: ${challengeBondInput} ETH`);
-  console.log(`Validator quorum: ${validatorQuorumBps} bps`);
-  console.log(`Slash penalty cap: ${slashPenaltyBps} bps`);
+  const staking = await ethers.getContractAt("IndexFlowStaking", stakingAddress, signer);
+  const rewards = await ethers.getContractAt("IndexFlowRewards", rewardsAddress, signer);
 
-  const tx = await dao.updateParameters({
-    baseReward,
-    challengeBond,
-    validatorQuorumBps,
-    slashPenaltyBps
-  });
-  await tx.wait();
-  console.log(`Parameters updated in tx ${tx.hash}`);
+  const minStakeArg = getArg("minimumStake");
+  if (minStakeArg) {
+    const minStake = ethers.parseEther(minStakeArg);
+    console.log(` - Setting minimum stake to ${minStakeArg} IFLW`);
+    await (await staking.setMinimumStake(minStake)).wait();
+  }
+
+  const lockPeriodArg = getArg("lockPeriod");
+  if (lockPeriodArg) {
+    const lockPeriod = Number(lockPeriodArg);
+    console.log(` - Setting lock period to ${lockPeriod} seconds`);
+    await (await staking.setLockPeriod(lockPeriod)).wait();
+  }
+
+  const indexerShareArg = getArg("indexerShareBps");
+  const minimumIndexerStakeArg = getArg("minimumIndexerStake");
+  const confirmationDepthArg = getArg("confirmationDepth");
+
+  if (indexerShareArg || minimumIndexerStakeArg || confirmationDepthArg) {
+    const current = await rewards.indexerShareBps();
+    const newIndexerShare = indexerShareArg ? Number(indexerShareArg) : Number(current);
+    const newMinimumIndexerStake = minimumIndexerStakeArg
+      ? ethers.parseEther(minimumIndexerStakeArg)
+      : await rewards.minimumIndexerStake();
+    const newConfirmationDepth = confirmationDepthArg
+      ? Number(confirmationDepthArg)
+      : await rewards.confirmationDepth();
+
+    console.log(
+      ` - Updating reward parameters (share=${newIndexerShare} bps, minimum stake=${ethers.formatEther(
+        newMinimumIndexerStake
+      )} IFLW, confirmations=${newConfirmationDepth})`
+    );
+    await (
+      await rewards.setParameters(newIndexerShare, newMinimumIndexerStake, newConfirmationDepth)
+    ).wait();
+  }
+
+  console.log("Parameter update complete.");
 }
 
 main().catch((error) => {

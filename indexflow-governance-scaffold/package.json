@@ -1,0 +1,24 @@
+{
+  "name": "indexflow-governance-scaffold",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Thin governance + ops scaffold for IndexFlow's DAO-lite dry-runs.",
+  "scripts": {
+    "prepare": "husky install || echo \"husky not installed\"",
+    "compile:sol": "hardhat compile",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo \"TODO: add linting once rules are defined\"",
+    "dry-run:proposal": "ts-node --project tsconfig.json scripts/propose_and_vote.ts",
+    "dry-run:rewards": "ts-node --project tsconfig.json scripts/simulate_rewards.ts",
+    "dry-run:fund-flow": "ts-node --project tsconfig.json scripts/fund_flow_demo.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "dotenv": "^16.4.1",
+    "ethers": "^6.10.0",
+    "hardhat": "^2.19.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.3"
+  }
+}

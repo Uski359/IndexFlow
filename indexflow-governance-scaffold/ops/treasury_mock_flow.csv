@@ -1,0 +1,6 @@
+date,source,sink,memo,txid_mock
+2025-01-05,IndexFlow OÜ,DAO-lite,Seed capital earmark,TX-DRY-0001
+2025-01-10,DAO-lite,TreasuryMock,Queue pilot validator funds,TX-DRY-0002
+2025-01-15,TreasuryMock,Validator-01,Off-chain stipend simulation,TX-DRY-0003
+2025-01-15,TreasuryMock,Validator-02,Off-chain stipend simulation,TX-DRY-0004
+2025-01-31,DAO-lite,Grants-Working-Group,Research sprint invoice,TX-DRY-0005
