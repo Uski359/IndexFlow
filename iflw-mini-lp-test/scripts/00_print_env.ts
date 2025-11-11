@@ -1,7 +1,13 @@
-﻿import { REQUIRED_ENV_VARS, getEnvVar, getUniswapContracts, getFeeTier, getPriceRatio, getDecimals } from "./shared/env";
+﻿import { REQUIRED_ENV_VARS, OPTIONAL_ENV_VARS, getEnvVar, getRpcUrl, getUniswapContracts, getFeeTier, getPriceRatio, getDecimals } from "./shared/env";
 
 async function main() {
   console.log("[00] Loaded environment variables:");
+  const rpcCandidates = ["RPC_URL_SEPOLIA", "RPC_URL_GOERLI"] as const;
+  for (const key of rpcCandidates) {
+    const value = process.env[key];
+    console.log(`  ${key}: ${value && value.trim().length > 0 ? value : "<not set>"}`);
+  }
+
   for (const key of REQUIRED_ENV_VARS) {
     try {
       const value = getEnvVar(key);
@@ -14,6 +20,15 @@ async function main() {
       console.error(`  ${key}: missing -> ${(error as Error).message}`);
     }
   }
+
+  for (const key of OPTIONAL_ENV_VARS) {
+    if (key.startsWith("RPC_URL")) continue; // already displayed
+    const value = process.env[key];
+    console.log(`  ${key}: ${value && value.trim().length > 0 ? value : "<not set>"}`);
+  }
+
+  const activeRpc = getRpcUrl();
+  console.log(`\n[00] Active RPC URL: ${activeRpc}`);
 
   const uniswap = getUniswapContracts();
   console.log("\n[00] Uniswap contract addresses:");

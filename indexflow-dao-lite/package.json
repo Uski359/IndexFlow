@@ -1,0 +1,17 @@
+{
+  "name": "indexflow-dao-lite",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat --config infra/hardhat.config.ts compile",
+    "deploy": "hardhat --config infra/hardhat.config.ts run scripts/deploy_dao.ts",
+    "simulate": "hardhat --config infra/hardhat.config.ts run scripts/simulate_proposal.ts"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "indexflow-validator-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Minimal validator and staking MVP for IndexFlow proof-of-indexing demo",
+  "scripts": {
+    "build": "hardhat compile",
+    "test": "hardhat test",
+    "lint": "echo 'No lint step configured'",
+    "deploy": "hardhat run --network localhost scripts/deploy.ts",
+    "node": "hardhat node",
+    "heartbeat": "ts-node scripts/NodeHeartbeat.ts"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  }
+}

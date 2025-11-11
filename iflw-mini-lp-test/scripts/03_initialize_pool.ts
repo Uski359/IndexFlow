@@ -30,9 +30,9 @@ async function main() {
 
   const wallet = getWallet();
   const contracts = getUniswapContracts();
-  const baseToken = contracts.iflwToken;
+  const baseToken = contracts.iflwToken ?? contracts.stakingToken ?? contracts.rewardToken;
   if (!baseToken) {
-    throw new Error("IFLW_TOKEN is not set. Deploy the token and add its address to .env");
+    throw new Error("Base token not set. Populate IFLW_TOKEN or STAKING_TOKEN in .env");
   }
 
   const quoteAddress = quoteSelection === "USDC" ? contracts.usdc : contracts.weth;

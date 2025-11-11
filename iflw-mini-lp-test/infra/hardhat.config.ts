@@ -4,12 +4,34 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-const { RPC_URL_SEPOLIA, PRIVATE_KEY } = process.env;
+const { RPC_URL_SEPOLIA, RPC_URL_GOERLI, PRIVATE_KEY } = process.env;
 
 const accounts = PRIVATE_KEY ? [PRIVATE_KEY] : undefined;
 
-if (!RPC_URL_SEPOLIA) {
-  console.warn("[hardhat] RPC_URL_SEPOLIA is not set. Sepolia network configuration will be skipped.");
+if (!RPC_URL_SEPOLIA && !RPC_URL_GOERLI) {
+  console.warn("[hardhat] No RPC URL set. Configure RPC_URL_SEPOLIA or RPC_URL_GOERLI in your .env.");
+}
+
+const networks: HardhatUserConfig["networks"] = {
+  hardhat: {
+    forking: {
+      url: "https://:ZJSjJhnNl%2F4ufUquNa9AjocBTmQ1EWFtt9OWWrBuvGedxYSIoFGarg@mainnet.infura.io/v3/d640d21279c24e27af1150a222121d39",
+    },
+  },
+};
+
+if (RPC_URL_SEPOLIA) {
+  networks.sepolia = {
+    url: RPC_URL_SEPOLIA,
+    accounts,
+  };
+}
+
+if (RPC_URL_GOERLI) {
+  networks.goerli = {
+    url: RPC_URL_GOERLI,
+    accounts,
+  };
 }
 
 const config: HardhatUserConfig = {
@@ -22,17 +44,7 @@ const config: HardhatUserConfig = {
       },
     },
   },
-  networks: {
-    hardhat: {},
-    ...(RPC_URL_SEPOLIA
-      ? {
-          sepolia: {
-            url: RPC_URL_SEPOLIA,
-            accounts,
-          },
-        }
-      : {}),
-  },
+  networks,
   paths: {
     root: "./",
     sources: "./contracts",

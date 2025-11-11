@@ -81,11 +81,12 @@ async function main() {
   const wallet = getWallet();
   const contracts = getUniswapContracts();
 
-  if (!contracts.iflwToken) {
-    throw new Error("IFLW_TOKEN is not set. Deploy the token and update .env");
-  }
-
-  const baseAddress = base === "IFLW" ? contracts.iflwToken : base === "WETH" ? contracts.weth : contracts.usdc;
+  const baseAddress =
+    base === "IFLW"
+      ? contracts.iflwToken ?? contracts.stakingToken ?? contracts.rewardToken
+      : base === "WETH"
+      ? contracts.weth
+      : contracts.usdc;
   if (!baseAddress) {
     throw new Error(`Unsupported base token ${base}`);
   }
@@ -146,6 +147,9 @@ async function main() {
   await ensureAllowance(baseTokenContract, wallet.address, contracts.positionManager, amountBase);
   await ensureAllowance(quoteTokenContract, wallet.address, contracts.positionManager, amountQuote);
 
+  const slippageBps = 700n; // 70%
+  const denominator = 1000n;
+
   const params = {
     token0,
     token1,
@@ -154,8 +158,8 @@ async function main() {
     tickUpper: upperTick,
     amount0Desired,
     amount1Desired,
-    amount0Min: (amount0Desired * 95n) / 100n,
-    amount1Min: (amount1Desired * 95n) / 100n,
+    amount0Min: (amount0Desired * slippageBps) / denominator,
+    amount1Min: (amount1Desired * slippageBps) / denominator,
     recipient: wallet.address,
     deadline: Math.floor(Date.now() / 1000) + 60 * 10,
   };
@@ -171,6 +175,10 @@ async function main() {
   for (const log of receipt?.logs ?? []) {
     try {
       const parsed = iface.parseLog(log);
+      if (!parsed) {
+        continue;
+      }
+
       if (parsed.name === "IncreaseLiquidity") {
         mintedTokenId = (parsed.args.tokenId as bigint).toString();
         liquidity = parsed.args.liquidity as bigint;

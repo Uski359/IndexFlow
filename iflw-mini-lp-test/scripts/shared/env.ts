@@ -8,7 +8,6 @@ dotenvConfig({ path: resolve(cwd(), ".env") });
 type OptionalEnv = string | undefined | null;
 
 export const REQUIRED_ENV_VARS = [
-  "RPC_URL_SEPOLIA",
   "PRIVATE_KEY",
   "UNIV3_FACTORY",
   "UNIV3_POSITION_MANAGER",
@@ -19,6 +18,17 @@ export const REQUIRED_ENV_VARS = [
   "P0_NUMERATOR",
   "P0_DENOMINATOR",
   "DECIMALS"
+] as const;
+
+export const OPTIONAL_ENV_VARS = [
+  "RPC_URL_SEPOLIA",
+  "RPC_URL_GOERLI",
+  "IFLW_TOKEN",
+  "USDC",
+  "STAKING_TOKEN",
+  "REWARD_TOKEN",
+  "STAKING_REWARDS",
+  "UNIFIED_WRAPPER"
 ] as const;
 
 export function getEnvVar(name: string, required = true): string {
@@ -50,9 +60,20 @@ export function getAddress(name: string): string {
   return value;
 }
 
+export function getRpcUrl(): string {
+  const primary = process.env.RPC_URL_SEPOLIA?.trim();
+  const secondary = process.env.RPC_URL_GOERLI?.trim();
+  if (primary) {
+    return primary;
+  }
+  if (secondary) {
+    return secondary;
+  }
+  throw new Error("Missing RPC URL. Set RPC_URL_SEPOLIA or RPC_URL_GOERLI in .env");
+}
+
 export function getProvider(): ethers.JsonRpcProvider {
-  const url = getEnvVar("RPC_URL_SEPOLIA");
-  return new ethers.JsonRpcProvider(url);
+  return new ethers.JsonRpcProvider(getRpcUrl());
 }
 
 export function getWallet(provider?: ethers.JsonRpcProvider): ethers.Wallet {

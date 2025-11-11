@@ -52,3 +52,10 @@
 - **Dual-Pair Option:** Keep USDC configuration ready to rotate into a stablecoin pair if WETH volatility spikes.
 - **Automation Guardrails:** Require human approval for `07_collect_fees.ts` and `08_remove_liquidity.ts` when touching more than half of aggregate liquidity.
 - **On-Chain Alerts:** Monitor pool price vs. `.env` target, reward contract balances, swap router gas spikes, wrapper share supply, and failed staking claims.
+
+## Deployment & Audit Roadmap
+- **Sepolia / Goerli Test Deployment:** Stand up core + periphery + wrapper on a supported testnet (Goerli today, Sepolia once official contracts exist). Record addresses in `infra/deployments/` and mirror to `.env`.
+- **Staging Environment:** Run the full script flow using the wrapper token (IFLOW) and staking contract with forked-mainnet simulation to capture gas profiles and liquidity sensitivity.
+- **Security Review:** Engage an external auditor to review `IFLWStakingRewards` and `IFLWUnifiedWrapper`. Scope includes allowance management, reward accounting, emergency controls, and wrapper exit paths. Target timeline: audit kickoff after staging tests; 3–4 weeks including remediation.
+- **Mainnet Rollout:** Following audit sign-off, deploy contracts with verified bytecode, update docs/README, and provide investors with an execution checklist (env config, funding needs, monitoring dashboards).
+- **Post-Launch Monitoring:** Implement alerting around TWAP deviations, wrapper share supply, keeper errors, and reward funding runway before enabling public LP participation.

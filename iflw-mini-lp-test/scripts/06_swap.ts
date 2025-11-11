@@ -72,7 +72,7 @@ async function main() {
   };
 
   const exactInput = router.getFunction("exactInputSingle");
-  const [expectedAmountOut] = await exactInput.staticCall(params);
+  const expectedAmountOut = await exactInput.staticCall(params);
   console.log(
     `[06] Expected output: ${ethers.formatUnits(expectedAmountOut, decimalsOut)} (${await tokenOut.symbol()})`
   );

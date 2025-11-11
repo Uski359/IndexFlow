@@ -43,7 +43,8 @@ async function main() {
     NONFUNGIBLE_POSITION_MANAGER_ABI,
     wallet
   );
-  const factoryAddress: string = await positionManager.factory();
+  const factoryAddress = contracts.factory;
+  console.log(`[02] Using factory address ${factoryAddress}`);
   const factory = new ethers.Contract(factoryAddress, UNISWAP_V3_FACTORY_ABI, wallet);
 
   const existingPool: string = await factory.getPool(token0, token1, fee);

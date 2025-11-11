@@ -6,23 +6,27 @@
     "workspaces":  [
                        "contracts",
                        "index-node",
-                       "frontend"
+                       "frontend",
+                       "backend",
+                       "packages/*"
                    ],
     "scripts":  {
                     "prepare":  "husky install",
                     "format":  "prettier --write .",
-                    "lint":  "npm run lint --workspace contracts \u0026\u0026 npm run lint --workspace index-node \u0026\u0026 npm run lint --workspace frontend",
-                    "typecheck":  "npm run typecheck --workspace contracts \u0026\u0026 npm run typecheck --workspace index-node \u0026\u0026 npm run typecheck --workspace frontend",
-                    "test":  "npm run test --workspace contracts \u0026\u0026 npm run test --workspace index-node \u0026\u0026 npm run test --workspace frontend",
+                    "lint":  "npm run lint --workspace contracts \u0026\u0026 npm run lint --workspace index-node \u0026\u0026 npm run lint --workspace frontend \u0026\u0026 npm run lint --workspace backend",
+                    "typecheck":  "npm run typecheck --workspace contracts \u0026\u0026 npm run typecheck --workspace index-node \u0026\u0026 npm run typecheck --workspace frontend \u0026\u0026 npm run typecheck --workspace backend",
+                    "test":  "npm run test --workspace contracts \u0026\u0026 npm run test --workspace index-node \u0026\u0026 npm run test --workspace frontend \u0026\u0026 npm run test --workspace backend",
                     "dev:index-node":  "npm --workspace index-node run dev",
                     "dev:frontend":  "npm --workspace frontend run dev",
                     "dev:contracts":  "npm --workspace contracts run dev",
+                    "dev:backend":  "npm --workspace backend run dev",
                     "build:index-node":  "npm --workspace index-node run build",
                     "build:frontend":  "npm --workspace frontend run build",
                     "build:contracts":  "npm --workspace contracts run build",
-        "sync:contracts":  "node scripts/sync-contracts.mjs",
-        "demo": "docker compose up --build",
-        "demo:down": "docker compose down"
+                    "build:backend":  "npm --workspace backend run build",
+                    "sync:contracts":  "node scripts/sync-contracts.mjs",
+                    "demo": "docker compose up --build",
+                    "demo:down": "docker compose down"
                 },
     "devDependencies":  {
                             "@typescript-eslint/eslint-plugin":  "^6.14.0",

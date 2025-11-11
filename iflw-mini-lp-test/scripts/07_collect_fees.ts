@@ -51,6 +51,7 @@ async function main() {
   for (const log of receipt?.logs ?? []) {
     try {
       const parsed = iface.parseLog(log);
+      if (!parsed) continue;
       if (parsed.name === "Collect") {
         console.log(
           `[07] Collected amount0=${parsed.args.amount0} amount1=${parsed.args.amount1}`

@@ -18,6 +18,7 @@
         "db:seed": "tsx prisma/seed.ts"
     },
     "dependencies": {
+        "@indexflow/config": "file:../packages/config",
         "@apollo/server": "^4.10.0",
         "@graphql-tools/schema": "^10.0.12",
         "@prisma/client": "^6.18.0",

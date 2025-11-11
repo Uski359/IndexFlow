@@ -1,0 +1,6 @@
+packages:
+  - contracts
+  - index-node
+  - frontend
+  - backend
+  - packages/*
