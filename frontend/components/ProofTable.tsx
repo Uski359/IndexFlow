@@ -3,6 +3,7 @@
 import { Binary, Link2, Router } from 'lucide-react';
 
 import { useRecentProofs } from '@/hooks/usePoi';
+import type { Proof } from '@/types';
 
 import Card from './Card';
 
@@ -16,7 +17,7 @@ const formatTimestamp = (ts: number) => {
 
 const ProofTable = () => {
   const { proofs, isLoading } = useRecentProofs();
-  const placeholderRows = Array.from({ length: 4 });
+  const placeholderRows: Array<Proof | undefined> = Array.from({ length: 4 }).map(() => undefined);
 
   return (
     <Card
@@ -37,7 +38,10 @@ const ProofTable = () => {
           </thead>
           <tbody>
             {(isLoading ? placeholderRows : proofs).map((proof, idx) => (
-              <tr key={proof?.txHash ?? idx} className="border-b border-[#1f1f2a] last:border-0">
+              <tr
+                key={proof?.txHash ?? `placeholder-${idx}`}
+                className="border-b border-[#1f1f2a] last:border-0"
+              >
                 <td className="px-3 py-3 text-xs text-gray-200">
                   <div className="flex items-center gap-2">
                     <Binary size={14} className="text-blue-300" />
