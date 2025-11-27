@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { parseEther } from "viem";
-import { useAccount, useContractWrite, useWaitForTransaction } from "wagmi";
+import { erc20Abi, maxUint256, parseUnits } from "viem";
+import { useAccount, useContractRead, useContractWrite, usePublicClient, useWaitForTransaction } from "wagmi";
 import toast from "react-hot-toast";
-import { stakingAbi } from "@/lib/contracts/stakingAbi";
-import { env } from "@/lib/env";
+import { useStakingContract } from "@/lib/hooks/useStakingContract";
 
-const stakingAddress = env.NEXT_PUBLIC_STAKING_CONTRACT as `0x${string}` | undefined;
+const STAKED_BALANCE_SCOPE = "staking-balance";
+const EARNED_BALANCE_SCOPE = "staking-earned";
 
 const formSchema = z.object({
   amount: z
@@ -23,24 +23,83 @@ type FormValues = z.infer<typeof formSchema>;
 
 export function StakingActions() {
   const { address, status } = useAccount();
+  const { contractConfig, tokenAddress } = useStakingContract();
+  const stakingAddress = contractConfig.address;
+  const stakeTokenAddress = tokenAddress;
   const isConnected = status === "connected" && !!address;
-  const demoMode = !stakingAddress;
+  const publicClient = usePublicClient();
 
   const stakeForm = useForm<FormValues>({ resolver: zodResolver(formSchema), defaultValues: { amount: "0" } });
   const unstakeForm = useForm<FormValues>({ resolver: zodResolver(formSchema), defaultValues: { amount: "0" } });
 
-  const {
-    writeAsync,
-    data: txData,
-    isLoading: isPending
-  } = useContractWrite({
-    address: stakingAddress,
-    abi: stakingAbi,
-    mode: "recklesslyUnprepared"
+  const { data: tokenDecimals } = useContractRead({
+    address: stakeTokenAddress,
+    abi: erc20Abi,
+    functionName: "decimals",
+    chainId: contractConfig.chainId,
+    watch: false
   });
-  const txHash = txData?.hash;
+
+  const { data: allowance, refetch: refetchAllowance } = useContractRead({
+    address: stakeTokenAddress,
+    abi: erc20Abi,
+    functionName: "allowance",
+    args: address ? [address, stakingAddress] : undefined,
+    chainId: contractConfig.chainId,
+    enabled: isConnected,
+    watch: true
+  });
+  const { refetch: refetchStakedBalance } = useContractRead({
+    ...contractConfig,
+    functionName: "balances",
+    args: address ? [address] : undefined,
+    enabled: false,
+    scopeKey: STAKED_BALANCE_SCOPE
+  });
+  const { refetch: refetchEarnedBalance } = useContractRead({
+    ...contractConfig,
+    functionName: "earned",
+    args: address ? [address] : undefined,
+    enabled: false,
+    scopeKey: EARNED_BALANCE_SCOPE
+  });
+
+  const {
+    writeAsync: stakeAsync,
+    data: stakeTxData,
+    isLoading: isStakePending
+  } = useContractWrite({
+    ...contractConfig,
+    functionName: "stake",
+    chainId: contractConfig.chainId
+  });
+  const {
+    writeAsync: unstakeAsync,
+    data: unstakeTxData,
+    isLoading: isUnstakePending
+  } = useContractWrite({
+    ...contractConfig,
+    functionName: "unstake",
+    chainId: contractConfig.chainId
+  });
+  const {
+    writeAsync: claimAsync,
+    data: claimTxData,
+    isLoading: isClaimPending
+  } = useContractWrite({
+    ...contractConfig,
+    functionName: "claimRewards",
+    chainId: contractConfig.chainId
+  });
+  const { writeAsync: approveAsync, isLoading: isApprovePending } = useContractWrite({
+    address: stakeTokenAddress,
+    abi: erc20Abi,
+    functionName: "approve",
+    chainId: contractConfig.chainId
+  });
+  const txHash = stakeTxData?.hash ?? unstakeTxData?.hash ?? claimTxData?.hash;
   const { isLoading: waitingReceipt } = useWaitForTransaction({ hash: txHash, enabled: Boolean(txHash) });
-  const isBusy = isPending || waitingReceipt;
+  const isBusy = waitingReceipt || isStakePending || isUnstakePending || isClaimPending || isApprovePending;
   const [pendingAction, setPendingAction] = useState<"stake" | "unstake" | "claim" | null>(null);
 
   const handleAction = (mode: "stake" | "unstake") => async ({ amount }: FormValues) => {
@@ -48,27 +107,43 @@ export function StakingActions() {
       toast.error("Connect your wallet to continue");
       return;
     }
-    if (!writeAsync) {
+    const decimals = typeof tokenDecimals === "number" ? tokenDecimals : 18;
+    const parsedAmount = parseUnits(amount, decimals);
+    const writer = mode === "stake" ? stakeAsync : unstakeAsync;
+    if (!writer) {
       toast.error("Wallet is not ready yet. Please try again.");
       return;
     }
-    if (demoMode) {
-      toast.success(`Demo: ${mode} ${amount} IFLW submitted`);
-      return;
-    }
     try {
+      if (mode === "stake") {
+        const currentAllowance = allowance ?? 0n;
+        if (currentAllowance < parsedAmount) {
+          if (!approveAsync) {
+            toast.error("Token approval is not ready yet. Please try again.");
+            return;
+          }
+          toast.loading("Approving tokens...", { id: "approve" });
+          const approvalTx = await approveAsync({ args: [stakingAddress, maxUint256] });
+          if (approvalTx && publicClient) {
+            await publicClient.waitForTransactionReceipt({ hash: approvalTx.hash });
+          }
+          toast.success("Tokens approved", { id: "approve" });
+          await refetchAllowance();
+        }
+      }
       setPendingAction(mode);
       toast.loading(`${mode === "stake" ? "Staking" : "Unstaking"} in progress...`, { id: mode });
-      await writeAsync({
-        address: stakingAddress!,
-        abi: stakingAbi,
-        functionName: mode,
-        args: [parseEther(amount)]
-      });
+      const tx = await writer({ args: [parsedAmount] });
+      if (tx && publicClient) {
+        await publicClient.waitForTransactionReceipt({ hash: tx.hash });
+      }
+      await Promise.all([refetchStakedBalance(), refetchEarnedBalance()]);
     } catch (error) {
       console.error(error);
-      toast.error("Transaction failed");
+      const message = error instanceof Error ? error.message : "Transaction failed";
+      toast.error(message);
       setPendingAction(null);
+      toast.dismiss("approve");
     }
   };
 
@@ -77,18 +152,18 @@ export function StakingActions() {
       toast.error("Connect your wallet to continue");
       return;
     }
-    if (!writeAsync) {
+    if (!claimAsync) {
       toast.error("Wallet is not ready yet. Please try again.");
-      return;
-    }
-    if (demoMode) {
-      toast.success("Demo: rewards claimed");
       return;
     }
     try {
       setPendingAction("claim");
       toast.loading("Claiming rewards...", { id: "claim" });
-      await writeAsync({ address: stakingAddress!, abi: stakingAbi, functionName: "claimRewards" });
+      const tx = await claimAsync();
+      if (tx && publicClient) {
+        await publicClient.waitForTransactionReceipt({ hash: tx.hash });
+      }
+      await refetchEarnedBalance();
     } catch (error) {
       console.error(error);
       toast.error("Claim failed");
