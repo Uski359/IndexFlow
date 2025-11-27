@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import apiRouter from '../api/routes/index.js';
 import adminRoutes from './admin.routes.js';
 import challengeRoutes from './challenge.routes.js';
 import dataRoutes from './data.routes.js';
@@ -11,6 +12,7 @@ import validatorRoutes from './validator.routes.js';
 
 const router = Router();
 
+router.use('/', apiRouter);
 router.use('/data', dataRoutes);
 router.use('/admin', adminRoutes);
 router.use('/verify', verifyRoutes);

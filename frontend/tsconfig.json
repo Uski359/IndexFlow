@@ -6,6 +6,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
+        "./*",
         "src/*"
       ]
     },
@@ -23,12 +24,20 @@
   },
   "include": [
     "next-env.d.ts",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "hooks/**/*.ts",
+    "hooks/**/*.tsx",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
+    "types/**/*.ts",
+    "styles/**/*.ts",
+    "next.config.js",
+    "tailwind.config.js",
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/*.cts",
-    "src/**/*.mts",
-    "next.config.mjs",
-    "tailwind.config.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [
