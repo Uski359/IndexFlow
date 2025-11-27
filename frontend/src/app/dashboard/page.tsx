@@ -1,7 +1,6 @@
 import { NavBar } from "@/components/common/NavBar";
 import { Footer } from "@/components/common/Footer";
 import { StakingOverview } from "@/components/dashboard/StakingOverview";
-import { StakingActions } from "@/components/dashboard/StakingActions";
 import { RewardHistory } from "@/components/dashboard/RewardHistory";
 
 export default function DashboardPage() {
@@ -10,7 +9,7 @@ export default function DashboardPage() {
       <NavBar />
       <main>
         <StakingOverview />
-        <StakingActions />
+        {/* StakingActions temporarily disabled */}
         <RewardHistory />
       </main>
       <Footer />
