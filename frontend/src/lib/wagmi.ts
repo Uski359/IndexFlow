@@ -9,16 +9,14 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { env } from "@/lib/env";
 
 const projectId = env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "indexflow-demo";
-const rpcUrl = env.NEXT_PUBLIC_RPC_URL ?? sepolia.rpcUrls.default.http[0];
 
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [sepolia],
-  [
-    jsonRpcProvider({
-      rpc: () => ({ http: rpcUrl })
-    })
-  ]
-);
+const resolvedRpcUrl = env.NEXT_PUBLIC_RPC_URL ?? sepolia.rpcUrls.default.http[0];
+
+const { chains, publicClient, webSocketPublicClient } = configureChains([sepolia], [
+  jsonRpcProvider({
+    rpc: () => ({ http: resolvedRpcUrl })
+  })
+]);
 
 export { chains };
 
@@ -45,11 +43,10 @@ export const wagmiConfig = createConfig({
       chains,
       options: {
         appName: "IndexFlow",
-        jsonRpcUrl: rpcUrl
+        jsonRpcUrl: resolvedRpcUrl
       }
     })
   ],
   publicClient,
-  webSocketPublicClient,
-  ssr: true
+  webSocketPublicClient
 });
