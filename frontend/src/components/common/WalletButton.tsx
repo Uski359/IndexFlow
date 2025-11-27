@@ -6,7 +6,7 @@ import { shortenAddress } from "@/lib/utils";
 
 export function WalletButton() {
   const { address, status } = useAccount();
-  const { connect, connectors, error, isPending } = useConnect();
+  const { connect, connectors, error, isLoading } = useConnect();
   const { disconnect } = useDisconnect();
 
   const primaryConnector = useMemo(() => connectors[0], [connectors]);
@@ -30,10 +30,10 @@ export function WalletButton() {
   return (
     <button
       onClick={handleConnect}
-      disabled={isPending}
+      disabled={isLoading}
       className="inline-flex items-center rounded-full bg-indexflow-secondary px-4 py-2 text-sm font-semibold text-white shadow shadow-indexflow-secondary/30 hover:shadow-lg disabled:opacity-60"
     >
-      {isPending ? "Connecting" : "Connect Wallet"}
+      {isLoading ? "Connecting" : "Connect Wallet"}
       {error && <span className="ml-2 text-xs text-indexflow-accent">{error.message}</span>}
     </button>
   );
