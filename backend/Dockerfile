@@ -1,49 +1,44 @@
-# -------------------------------
+# -----------------------------
 # 1) BASE IMAGE
-# -------------------------------
-FROM node:22-alpine AS base
+# -----------------------------
+FROM node:20-alpine AS base
 WORKDIR /app
 
-# -------------------------------
-# 2) INSTALL ROOT DEPS (packages/config dahil)
-# -------------------------------
-COPY package.json package-lock.json ./
+# pnpm / corepack aktif
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml ./
+
+COPY backend ./backend
 COPY packages ./packages
-RUN npm install --legacy-peer-deps
 
-# -------------------------------
-# 3) BACKEND DEPS
-# -------------------------------
-FROM base AS deps-backend
+# -----------------------------
+# 2) INSTALL ROOT DEPENDENCIES
+# -----------------------------
+RUN pnpm install --filter ./packages/config... \
+    && pnpm install --filter ./backend...
+
+# -----------------------------
+# 3) BUILD CONFIG PACKAGE
+# -----------------------------
+WORKDIR /app/packages/config
+RUN pnpm build   # <-- dist klasörünü oluşturur!!
+
+# -----------------------------
+# 4) BUILD BACKEND
+# -----------------------------
 WORKDIR /app/backend
-COPY backend/package*.json ./
-RUN npm install --legacy-peer-deps
+RUN pnpm build   # tsconfig.prod.json kullanır
 
-# -------------------------------
-# 4) COPY BACKEND SOURCE
-# -------------------------------
-FROM deps-backend AS builder
-WORKDIR /app/backend
-COPY backend ./       
-COPY packages ./packages   
+# -----------------------------
+# 5) RUNNER
+# -----------------------------
+FROM node:20-alpine AS runner
+WORKDIR /app
 
-# MULTI-PROJECT TS CONFIG DESTEĞİ
-COPY tsconfig.base.json /app/tsconfig.base.json
-
-# -------------------------------
-# 5) BUILD
-# -------------------------------
-RUN npx tsc -p tsconfig.prod.json
-
-# -------------------------------
-# 6) RUNNER
-# -------------------------------
-FROM node:22-alpine AS runner
-WORKDIR /app/backend
-
-COPY --from=builder /app/backend/dist ./dist
-COPY --from=builder /app/backend/package*.json ./
-COPY --from=deps-backend /app/backend/node_modules ./node_modules
+COPY --from=base /app/backend/dist ./dist
+COPY --from=base /app/backend/package.json ./package.json
+COPY --from=base /app/backend/node_modules ./node_modules
 
 EXPOSE 4000
 CMD ["node", "dist/server.js"]
