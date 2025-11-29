@@ -1,16 +1,23 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "CommonJS",
+    "moduleResolution": "Node",
     "target": "ES2020",
     "outDir": "dist",
     "rootDir": "src",
+
+    "allowImportingTsExtensions": false,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "strict": false,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "moduleResolution": "Node",
-    "baseUrl": "./src",
-    "paths": {}
+
+    "baseUrl": "./",
+    "paths": {
+      "@indexer/*": ["./src/indexer/*"],
+      "@indexflow/config": ["../packages/config/src/index"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
