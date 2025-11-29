@@ -1,39 +1,41 @@
-# Base stage: install deps
+# -------------------------
+# Base Image
+# -------------------------
 FROM node:20-alpine AS base
-
 WORKDIR /app
 
-# Corepack + pnpm
+# pnpm enable
 RUN corepack enable
 
-# Root files
+# Root dosyaları
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY tsconfig.base.json ./tsconfig.base.json   # <-- EKLENMESİ GEREKEN SATIR
 
-# Monorepo packages
+# Base tsconfig
+COPY tsconfig.base.json ./tsconfig.base.json
+
+# Paketler ve backend
 COPY packages ./packages
 COPY backend ./backend
 
-# Install all workspace deps
+# Tüm workspace bağımlılıklarını kur
 RUN pnpm install --recursive
 
-# -----------------------------
-# Build config package
-# -----------------------------
+# -------------------------
+# config package build
+# -------------------------
 WORKDIR /app/packages/config
-RUN pnpm build   # <-- Artık tsconfig.base.json bulunacak!
+RUN pnpm build
 
-# -----------------------------
-# Build backend
-# -----------------------------
+# -------------------------
+# backend build
+# -------------------------
 WORKDIR /app/backend
 RUN pnpm build
 
-# -----------------------------
-# Final runner image
-# -----------------------------
+# -------------------------
+# Runner
+# -------------------------
 FROM node:20-alpine AS runner
-
 WORKDIR /app
 
 COPY --from=base /app/backend/dist ./dist
