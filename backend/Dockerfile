@@ -3,7 +3,7 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY tsconfig.json ./
-COPY ../tsconfig.base.json ./tsconfig.base.json
+COPY tsconfig.base.json ./tsconfig.base.json
 
 RUN npm install
 
