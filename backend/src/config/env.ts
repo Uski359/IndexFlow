@@ -4,7 +4,7 @@ dotenv.config();
 import {
   loadBackendConfig,
   type BackendConfig
-} from '../../../packages/config/dist/index.js';
+} from '../../packages/config/dist/index.js';
 
 export type { BackendConfig };
 
