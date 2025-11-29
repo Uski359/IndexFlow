@@ -1,10 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import {
-  loadBackendConfig,
-  type BackendConfig
-} from '../../packages/config/dist/index.js';
+import { loadBackendConfig, type BackendConfig } from "@indexflow/config";
 
 export type { BackendConfig };
 

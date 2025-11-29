@@ -1,7 +1,7 @@
 import { MongoClient, type Db, type Document, type WithId, type Collection } from 'mongodb';
 
-import { logger } from '../logger';
-import { withRetry } from '../utils/retry';
+import { logger } from '../logger.js';
+import { withRetry } from '../utils/retry.js';
 
 const mongoUri =
   process.env.MONGO_URL ?? process.env.MONGO_URI ?? 'mongodb://localhost:27017/indexflow';

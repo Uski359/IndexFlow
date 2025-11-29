@@ -4,12 +4,12 @@
     "private": true,
     "description": "IndexFlow monorepo for decentralized data indexing and search protocol",
     "workspaces": [
-        "contracts",
-        "index-node",
-        "frontend",
         "backend",
         "packages/*"
     ],
+    "engines": {
+        "node": ">=20"
+    },
     "scripts": {
         "prepare": "husky install",
         "format": "prettier --write .",
@@ -43,7 +43,7 @@
         "husky": "^9.1.7",
         "lint-staged": "^16.2.4",
         "prettier": "^3.2.5",
-        "typescript": "~5.3.3"
+        "typescript": "^5.4.0"
     },
     "dependencies": {
         "@vercel/analytics": "^1.5.0",

@@ -1,6 +1,6 @@
-import { getChainConfig } from '../chains/index';
-import { logger } from '../logger';
-import { runBackfill } from './runBackfill';
+import { getChainConfig } from '../chains/index.js';
+import { logger } from '../logger.js';
+import { runBackfill } from './runBackfill.js';
 
 const chainId = 'base';
 const config = getChainConfig(chainId);

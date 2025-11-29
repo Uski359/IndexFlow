@@ -1,4 +1,4 @@
-import type { ChainConfig } from './types';
+import type { ChainConfig } from './types.js';
 
 export const BASE: ChainConfig = {
   id: 'base',

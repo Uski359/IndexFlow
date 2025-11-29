@@ -1,8 +1,8 @@
 import type { Filter } from 'mongodb';
 
-import { logger } from '../logger';
-import { withRetry } from '../utils/retry';
-import { getTransfersCollection, type TransferDocument } from './mongo';
+import { logger } from '../logger.js';
+import { withRetry } from '../utils/retry.js';
+import { getTransfersCollection, type TransferDocument } from './mongo.js';
 
 export interface TransferInput {
   chain: string;

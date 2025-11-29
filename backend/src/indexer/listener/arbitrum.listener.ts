@@ -1,6 +1,6 @@
-import { getChainConfig } from '../chains/index';
-import { logger } from '../logger';
-import { runListener } from './runListener';
+import { getChainConfig } from '../chains/index.js';
+import { logger } from '../logger.js';
+import { runListener } from './runListener.js';
 
 const chainId = 'arbitrum';
 const config = getChainConfig(chainId);
