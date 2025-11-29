@@ -1,60 +1,45 @@
-# ============================================
-# 1) BASE IMAGE
-# Node 20: packages/config -> mongodb@7, bson@7 uyumlu
-# ============================================
-FROM node:20-alpine AS base
+# -------------------------------
+# 1) Base layer (modules installed at monorepo root)
+# -------------------------------
+FROM node:20-alpine AS deps
 WORKDIR /app
 
+# Monorepo kök package ve tsconfig dosyalarını kopyala
+COPY package.json package-lock.json ./
+COPY tsconfig.base.json ./tsconfig.base.json
 
-# ============================================
-# 2) INSTALL DEPS
-# Sadece backend'in kendi package.json dosyası
-# ============================================
-FROM base AS deps
-
-# Backend package.json
-COPY backend/package*.json ./
-
-# Root'taki packages/config'i include edeceğiz → build context . olmalı
+# packages ve backend dizinlerini kopyala
 COPY packages ./packages
+COPY backend ./backend
 
+# Root install (config dahil)
 RUN npm install
 
-
-# ============================================
-# 3) BUILDER STAGE – TypeScript build
-# ============================================
-FROM base AS builder
+# -------------------------------
+# 2) Backend build
+# -------------------------------
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-# node_modules'ı kopyala
+# Tüm monorepo içeriklerini tekrar kopyala (build için gerekli)
+COPY . .
+
+# Root’taki node_modules’u builder'a kopyala
 COPY --from=deps /app/node_modules ./node_modules
 
-# Backend kaynak kodu
-COPY backend ./
+# backend'i build et
+WORKDIR /app/backend
+RUN npm run build
 
-# packages/config'i tekrar dahil et (TS import pathleri için)
-COPY packages ./packages
-
-# Artık backend içinde tsconfig.prod.json var
-RUN npx tsc -p tsconfig.prod.json
-
-
-# ============================================
-# 4) RUNNER – minimal image
-# ============================================
+# -------------------------------
+# 3) Production runner
+# -------------------------------
 FROM node:20-alpine AS runner
-WORKDIR /app
+WORKDIR /app/backend
 
-ENV NODE_ENV=production
-
-# Çalışması için dist + backend package.json yeterli
-COPY --from=builder /app/dist ./dist
-COPY backend/package*.json ./
-
-# node_modules
+COPY --from=builder /app/backend/dist ./dist
 COPY --from=deps /app/node_modules ./node_modules
+COPY backend/package.json ./package.json
 
 EXPOSE 4000
-
 CMD ["node", "dist/server.js"]
