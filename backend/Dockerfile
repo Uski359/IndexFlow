@@ -1,38 +1,45 @@
-# -----------------------------
-# 1) Install ALL deps (dev+prod)
-# -----------------------------
+# ------------------------------------------
+# Base deps (install all dependencies)
+# ------------------------------------------
 FROM node:20-alpine AS deps
 WORKDIR /app
 
 COPY package.json package-lock.json ./
+COPY packages ./packages     # ❗ config package dahil
+COPY backend ./backend        # backend dahil
+
+WORKDIR /app/packages/config
+RUN npm install
+RUN npx tsc -p tsconfig.json   # config package build → dist oluşur
+
+WORKDIR /app/backend
 RUN npm install
 
-# -----------------------------
-# 2) Builder (tsc burada var!)
-# -----------------------------
+# ------------------------------------------
+# Builder
+# ------------------------------------------
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# devDependencies burada GELİYOR
-COPY package.json package-lock.json ./
-RUN npm install
+# Dep'leri komple al
+COPY --from=deps /app ./
 
-COPY . .
-
-# ❗ Burada artık "tsc" kesin mevcut
+# Backend build
+WORKDIR /app/backend
 RUN npx tsc -p tsconfig.prod.json
 
-# -----------------------------
-# 3) Runner (production only)
-# -----------------------------
+# ------------------------------------------
+# Runner
+# ------------------------------------------
 FROM node:20-alpine AS runner
-WORKDIR /app
+WORKDIR /app/backend
+
 ENV NODE_ENV=production
 
-COPY package.json package-lock.json ./
-RUN npm install --omit=dev
+COPY --from=builder /app/backend/dist ./dist
+COPY --from=builder /app/backend/package.json ./
 
-COPY --from=builder /app/dist ./dist
+RUN npm install --omit=dev
 
 EXPOSE 4000
 CMD ["node", "dist/server.js"]
