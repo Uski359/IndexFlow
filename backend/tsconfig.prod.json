@@ -9,7 +9,6 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "moduleResolution": "Node",
-    "allowImportingTsExtensions": true,
     "baseUrl": "./src",
     "paths": {}
   },
