@@ -115,6 +115,18 @@ contract StakingRewards {
         _distributeReward(validator, rewardAmount);
     }
 
+    function previewReward(address validator) external view returns (uint256) {
+        ValidatorRegistry.Validator memory validatorInfo = registry.getValidator(validator);
+        if (!validatorInfo.active || stakes[validator] == 0) {
+            return 0;
+        }
+        return _calculateReward(validatorInfo.lastProof);
+    }
+
+    function rewardPoolBalance() external view returns (uint256) {
+        return address(this).balance;
+    }
+
     function _distributeReward(address validator, uint256 rewardAmount) internal {
         require(rewardAmount > 0, "Zero reward");
         require(address(this).balance >= rewardAmount, "Insufficient rewards");

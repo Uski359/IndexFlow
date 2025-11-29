@@ -1,0 +1,14 @@
+{
+  "network": "sepolia",
+  "deployer": "0x26e00b3bBA422c14c2037a13E5aeDc9FCE286fBe",
+  "rewardToken": "0x93b95F6956330f4a56E7A94457A7E597a7340E61",
+  "treasury": "0x4E544DA8F98fC83c3E3110dc760E2b109B911Da2",
+  "staking": "0x1aD2D92dDe942266f775d01f813a0DBE74Bc88e4",
+  "rewards": "0xD93a8B1DdF526b6b9D61ad379f44E9Ef891E0BA0",
+  "stakingPool": "",
+  "proofOfIndexing": "",
+  "contributionRegistry": "",
+  "metadata": {
+    "coordinator": ""
+  }
+}

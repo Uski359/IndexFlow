@@ -18,7 +18,7 @@ reward = baseReward + (elapsedSeconds * uptimeMultiplier) / PROOF_INTERVAL
 
 Where `elapsedSeconds = block.timestamp - lastProof`. Validators that keep up with heartbeats will hover near `baseReward`, while those who occasionally miss a proof will accumulate a larger bonus the next time they submit.
 
-Rewards are credited back into the validator's stake so they compound automatically. When the contract holds enough ETH (funded via `receive()` or `fundRewardPool()`), validators can withdraw their earnings through `withdraw(amount)`.
+Rewards are credited back into the validator's stake so they compound automatically. When the contract holds enough ETH (funded via `receive()` or `fundRewardPool()`), validators can withdraw their earnings through `withdraw(amount)`. The `previewReward(address)` helper exposes the current reward estimate (used by the SDK for dashboards) without mutating state.
 
 This structure keeps the on-chain logic transparent:
 

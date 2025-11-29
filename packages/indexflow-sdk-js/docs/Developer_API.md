@@ -97,8 +97,8 @@ const stats = queryStats();
 | Name | Description | Default |
 | --- | --- | --- |
 | `RPC_URL` | EVM endpoint used by ethers v6 | `https://ethereum.publicnode.com` |
-| `VALIDATOR_REGISTRY_ADDRESS` | ValidatorRegistry contract used for activation + stake reads | not set (disables on-chain reads) |
-| `STAKING_REWARDS_ADDRESS` | StakingRewards contract used for per-account pending rewards | not set (disables on-chain reads) |
+| `VALIDATOR_REGISTRY_ADDRESS` | `packages/indexflow-validator-mvp` deployment used to read validator status/stake | not set (disables on-chain reads) |
+| `STAKING_REWARDS_ADDRESS` | Same deployment's `StakingRewards` contract (used for reward previews) | not set (disables on-chain reads) |
 | `PORT` | Express + Apollo server port | `4000` |
 
 Leaving the contract addresses unset keeps the simulation fully offline while still exercising the ethers-based wiring for future deployments.

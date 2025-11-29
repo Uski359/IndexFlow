@@ -1,4 +1,4 @@
-import type { ChainConfig } from './types.ts';
+import type { ChainConfig } from './types';
 
 export const ETHEREUM_MAINNET: ChainConfig = {
   id: 'ethereum',

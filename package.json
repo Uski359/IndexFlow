@@ -1,50 +1,72 @@
 {
-    "name":  "indexflow",
-    "version":  "0.1.0",
-    "private":  true,
-    "description":  "IndexFlow monorepo for decentralized data indexing and search protocol",
-    "workspaces":  [
-                       "contracts",
-                       "index-node",
-                       "frontend",
-                       "backend",
-                       "packages/*"
-                   ],
-    "scripts":  {
-                    "prepare":  "husky install",
-                    "format":  "prettier --write .",
-                    "lint":  "npm run lint --workspace contracts \u0026\u0026 npm run lint --workspace index-node \u0026\u0026 npm run lint --workspace frontend \u0026\u0026 npm run lint --workspace backend",
-                    "typecheck":  "npm run typecheck --workspace contracts \u0026\u0026 npm run typecheck --workspace index-node \u0026\u0026 npm run typecheck --workspace frontend \u0026\u0026 npm run typecheck --workspace backend",
-                    "test":  "npm run test --workspace contracts \u0026\u0026 npm run test --workspace index-node \u0026\u0026 npm run test --workspace frontend \u0026\u0026 npm run test --workspace backend",
-                    "dev:index-node":  "npm --workspace index-node run dev",
-                    "dev:frontend":  "npm --workspace frontend run dev",
-                    "dev:contracts":  "npm --workspace contracts run dev",
-                    "dev:backend":  "npm --workspace backend run dev",
-                    "build:index-node":  "npm --workspace index-node run build",
-                    "build:frontend":  "npm --workspace frontend run build",
-                    "build:contracts":  "npm --workspace contracts run build",
-                    "build:backend":  "npm --workspace backend run build",
-                    "sync:contracts":  "node scripts/sync-contracts.mjs",
-                    "demo": "docker compose up --build",
-                    "demo:down": "docker compose down"
-                },
-    "devDependencies":  {
-                            "@typescript-eslint/eslint-plugin":  "^6.14.0",
-                            "@typescript-eslint/parser":  "^6.14.0",
-                            "eslint":  "^8.56.0",
-                            "eslint-config-prettier":  "^9.1.0",
-                            "eslint-plugin-import":  "^2.29.1",
-                            "eslint-plugin-jsx-a11y":  "^6.8.0",
-                            "eslint-plugin-react":  "^7.33.2",
-                            "eslint-plugin-react-hooks":  "^4.6.0",
-                            "husky":  "^9.1.7",
-                            "lint-staged":  "^16.2.4",
-                            "prettier":  "^3.2.5",
-                            "typescript":  "~5.3.3"
-                        },
-    "dependencies":  {
-                         "@vercel/analytics":  "^1.5.0",
-                         "openai":  "^6.7.0",
-                         "postgres-array":  "^3.0.4"
-                     }
+    "name": "indexflow",
+    "version": "0.1.0",
+    "private": true,
+    "description": "IndexFlow monorepo for decentralized data indexing and search protocol",
+    "workspaces": [
+        "contracts",
+        "index-node",
+        "frontend",
+        "backend",
+        "packages/*"
+    ],
+    "scripts": {
+        "prepare": "husky install",
+        "format": "prettier --write .",
+        "lint": "npm run lint --workspace contracts && npm run lint --workspace index-node && npm run lint --workspace frontend && npm run lint --workspace backend",
+        "typecheck": "npm run typecheck --workspace contracts && npm run typecheck --workspace index-node && npm run typecheck --workspace frontend && npm run typecheck --workspace backend",
+        "test": "npm run test --workspace contracts && npm run test --workspace index-node && npm run test --workspace frontend && npm run test --workspace backend",
+        "dev:index-node": "npm --workspace index-node run dev",
+        "dev:frontend": "npm --workspace frontend run dev",
+        "dev:contracts": "npm --workspace contracts run dev",
+        "dev:backend": "npm --workspace backend run dev",
+        "build:index-node": "npm --workspace index-node run build",
+        "build:frontend": "npm --workspace frontend run build",
+        "build:contracts": "npm --workspace contracts run build",
+        "build:backend": "npm --workspace backend run build",
+        "indexer:listener:all": "npm --workspace backend run indexer:listener:all",
+        "sync:contracts": "node scripts/sync-contracts.mjs",
+        "stack:start": "powershell -ExecutionPolicy Bypass -File ./scripts/start-all.ps1",
+        "demo": "docker compose up --build",
+        "demo:down": "docker compose down",
+        "stack:getting-started": "node scripts/getting-started.mjs"
+    },
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^6.14.0",
+        "@typescript-eslint/parser": "^6.14.0",
+        "eslint": "^8.56.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-import": "^2.29.1",
+        "eslint-plugin-jsx-a11y": "^6.8.0",
+        "eslint-plugin-react": "^7.33.2",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^16.2.4",
+        "prettier": "^3.2.5",
+        "typescript": "~5.3.3"
+    },
+    "dependencies": {
+        "@vercel/analytics": "^1.5.0",
+        "ethers": "^6.15.0",
+        "express": "^5.1.0",
+        "mongodb": "^7.0.0",
+        "openai": "^6.7.0",
+        "postgres-array": "^3.0.4"
+    },
+    "main": "compare.js",
+    "directories": {
+        "doc": "docs"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Uski359/IndexFlow.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "bugs": {
+        "url": "https://github.com/Uski359/IndexFlow/issues"
+    },
+    "homepage": "https://github.com/Uski359/IndexFlow#readme"
 }

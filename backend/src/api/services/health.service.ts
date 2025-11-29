@@ -1,7 +1,7 @@
 import type { IndexerHealthDTO } from '../dtos/health.dto.js';
 import type { TransferDocument } from '../../indexer/db/mongo.js';
 import { connectDB } from '../../indexer/db/mongo.js';
-import { getProvider } from '../../indexer/services/provider.ts';
+import { getProvider } from '../../indexer/services/provider';
 import { logger } from '../../config/logger.js';
 
 const TRANSFERS_COLLECTION = 'transfers';

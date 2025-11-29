@@ -1,11 +1,19 @@
 import { GraphQLScalarType, Kind } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@db/prisma";
 import { env } from "@config/env";
 import { requestProofOfSql } from "@proofs/sql";
+import { transfers } from "@graphql/resolvers/transfers";
+import { encodeCursor, decodeCursor, decodeCursorSafe } from "@utils/cursor";
 
 const typeDefs = /* GraphQL */ `
   scalar BigInt
+
+  enum SortDirection {
+    ASC
+    DESC
+  }
 
   type Block {
     chainId: String!
@@ -25,7 +33,7 @@ const typeDefs = /* GraphQL */ `
     blockNumber: Int!
   }
 
-  type Erc20Transfer {
+  type Transfer {
     id: String!
     txHash: String!
     logIndex: Int!
@@ -34,6 +42,7 @@ const typeDefs = /* GraphQL */ `
     from: String!
     to: String!
     value: String!
+    timestamp: BigInt!
   }
 
   type TransactionConnection {
@@ -42,7 +51,7 @@ const typeDefs = /* GraphQL */ `
   }
 
   type TransferConnection {
-    items: [Erc20Transfer!]!
+    items: [Transfer!]!
     nextCursor: String
   }
 
@@ -102,6 +111,20 @@ const typeDefs = /* GraphQL */ `
     health: IndexerStatus!
     latestBlock: Block
     blocks(limit: Int = 10, cursor: Int): BlockConnection!
+    transfers(
+      chainId: String
+      fromBlock: Int
+      toBlock: Int
+      address: String
+      token: String
+      minValue: BigInt
+      maxValue: BigInt
+      limit: Int = 20
+      cursor: String
+      direction: SortDirection = DESC
+      fromTimestamp: BigInt
+      toTimestamp: BigInt
+    ): TransferConnection!
     indexedBatches(limit: Int = 20, cursor: String): [IndexedBatch!]!
     proofOfIndexing(batchId: String!): ProofOfIndexing
     proofOfSql(query: String!): ProofOfSqlResponse!
@@ -136,6 +159,16 @@ const BigIntScalar = new GraphQLScalarType({
     return null;
   }
 });
+
+type TransferWithBlock = Prisma.Erc20TransferGetPayload<{
+  include: { block: { select: { timestamp: true } } };
+}>;
+
+const addBlockTimestamps = (transfers: TransferWithBlock[]) =>
+  transfers.map((transfer) => ({
+    ...transfer,
+    timestamp: transfer.block?.timestamp ?? BigInt(0)
+  }));
 
 export const resolvers = {
   BigInt: BigIntScalar,
@@ -181,6 +214,7 @@ export const resolvers = {
         nextCursor
       };
     },
+    transfers,
     indexedBatches: async (_: unknown, args: { limit?: number; cursor?: string }) => {
       const limit = Math.min(args.limit ?? 20, 100);
       return prisma.indexedBatch.findMany({
@@ -270,6 +304,13 @@ export const resolvers = {
         },
         orderBy: { logIndex: "asc" },
         take: limit,
+        include: {
+          block: {
+            select: {
+              timestamp: true
+            }
+          }
+        },
         ...(args.cursor
           ? {
               skip: 1,
@@ -282,12 +323,41 @@ export const resolvers = {
             }
           : {})
       });
+      const normalized = addBlockTimestamps(transfers);
       const nextCursor =
-        transfers.length === limit ? transfers[transfers.length - 1].id : null;
+        normalized.length === limit ? normalized[normalized.length - 1].id : null;
       return {
-        items: transfers,
+        items: normalized,
         nextCursor
       };
+    }
+  },
+  Transfer: {
+    timestamp: async (parent: {
+      timestamp?: bigint;
+      block?: { timestamp: bigint };
+      blockNumber: number;
+      chainId?: string;
+    }) => {
+      if (parent.timestamp !== undefined) {
+        return parent.timestamp;
+      }
+      if (parent.block?.timestamp !== undefined) {
+        return parent.block.timestamp;
+      }
+
+      const block = await prisma.block.findUnique({
+        where: {
+          chainId_number: {
+            chainId: parent.chainId ?? env.CHAIN_ID,
+            number: parent.blockNumber
+          }
+        },
+        select: {
+          timestamp: true
+        }
+      });
+      return block?.timestamp ?? BigInt(0);
     }
   },
   IndexedBatch: {
@@ -306,3 +376,5 @@ export const schema = makeExecutableSchema({
   typeDefs,
   resolvers
 });
+
+export { encodeCursor, decodeCursor, decodeCursorSafe } from "@utils/cursor";

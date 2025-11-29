@@ -2,19 +2,19 @@
   {
     "name": "Ethereum Sepolia",
     "chainId": 11155111,
-    "rpc": ["https://sepolia.infura.io/v3/${INFURA_KEY}", "https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_KEY}"],
+    "rpc": ["https://eth-sepolia.g.alchemy.com/v2/vtMDks-q4F59s_mGE9HGg"],
     "explorer": "https://sepolia.etherscan.io"
   },
   {
     "name": "Base Sepolia",
     "chainId": 84532,
-    "rpc": ["https://base-sepolia.g.alchemy.com/v2/${ALCHEMY_KEY}"],
+    "rpc": ["https://base-sepolia.g.alchemy.com/v2/vtMDks-q4F59s_mGE9HGg"],
     "explorer": "https://sepolia.basescan.org"
   },
   {
     "name": "Arbitrum Sepolia",
     "chainId": 421614,
-    "rpc": ["https://arb-sepolia.g.alchemy.com/v2/${ALCHEMY_KEY}"],
+    "rpc": ["https://arb-sepolia.g.alchemy.com/v2/vtMDks-q4F59s_mGE9HGg"],
     "explorer": "https://sepolia.arbiscan.io"
   }
 ]

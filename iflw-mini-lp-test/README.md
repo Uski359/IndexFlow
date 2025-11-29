@@ -16,8 +16,8 @@ This repo packages the reproducible demo we use to explain IndexFlow's "mini LP"
 | Swap Router 02 | `0xC3ba49ee04cF58CD206Fac3C212a3F54d4253865` | Latest deployment; scripts point here by default. |
 | Quoter V2 | `0x0788CA98EAE832D37D832175ef95117C079c2F92` | Powers `05_get_quote.ts`. |
 | WETH9 | `0xdd13E55209Fd76AfE204dBda4007C227904f0a81` | Canonical Sepolia WETH. |
-| IFLWT (ERC20) | `0x063c40F24CE90d90de9f8F24c8c956B7194C29d4` | Test token with 18 decimals. |
-| Reward token | `0x5baBb49be2E28801c5423D8698834dE1F98D3727` | Used by the staking wrapper demo. |
+| IFLWT (ERC20) | `0x93b95F6956330f4a56E7A94457A7E597a7340E61` | Test token with 18 decimals. |
+| Reward token | `0x93b95F6956330f4a56E7A94457A7E597a7340E61` | Used by the staking wrapper demo. |
 | Staking rewards | `0x015c2d9bDeb027Fe9c0FC1D3206Ad4ee97359F79` | Pull-based reward distributor. |
 | Pool (IFLWT/WETH, 0.3%) | `0x3EbF117577D12f2c792D0De51d2DdFD277C75A7b` | Initialized at price ratio 1 : 20,000 (token1/token0). |
 | Latest LP tokenId | `1` | Minted via `04_add_liquidity.ts`, reused in fee/withdraw scripts. |

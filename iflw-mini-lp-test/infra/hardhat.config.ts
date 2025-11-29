@@ -15,7 +15,7 @@ if (!RPC_URL_SEPOLIA && !RPC_URL_GOERLI) {
 const networks: HardhatUserConfig["networks"] = {
   hardhat: {
     forking: {
-      url: "https://:ZJSjJhnNl%2F4ufUquNa9AjocBTmQ1EWFtt9OWWrBuvGedxYSIoFGarg@mainnet.infura.io/v3/d640d21279c24e27af1150a222121d39",
+      url: "https://eth-mainnet.g.alchemy.com/v2/vtMDks-q4F59s_mGE9HGg",
     },
   },
 };

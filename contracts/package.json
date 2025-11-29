@@ -6,6 +6,7 @@
     "build": "hardhat compile",
     "test": "hardhat test",
     "deploy": "hardhat run scripts/deploy.ts --network sepolia",
+    "devnet:bootstrap": "hardhat run scripts/devnet-bootstrap.ts --network localhost",
     "update:params": "hardhat run scripts/update-parameters.ts",
     "dev": "hardhat node",
     "lint": "solhint 'src/**/*.sol'",

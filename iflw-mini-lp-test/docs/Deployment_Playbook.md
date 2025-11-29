@@ -8,7 +8,7 @@ Use Uniswap v3’s existing Goerli deployments to execute the full Mini LP flow 
 - Update `.env`:
   ```ini
   RPC_URL_SEPOLIA=<leave blank or keep for later>
-  RPC_URL_GOERLI=https://goerli.infura.io/v3/<key>
+  RPC_URL_GOERLI=https://eth-goerli.g.alchemy.com/v2/<key>
   UNIV3_FACTORY=0x1F98431c8aD98523631AE4a59f267346ea31F984
   UNIV3_POSITION_MANAGER=0xC36442b4a4522E871399CD717aBDD847Ab11FE88
   UNIV3_SWAP_ROUTER=0xE592427A0AEce92De3Edee1F18E0157C05861564

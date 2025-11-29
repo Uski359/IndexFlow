@@ -1,6 +1,6 @@
 import Bottleneck from 'bottleneck';
 
-import { logger } from '../logger.ts';
+import { logger } from '../logger';
 
 export const createRpcLimiter = (chainId: string): Bottleneck => {
   const limiter = new Bottleneck({

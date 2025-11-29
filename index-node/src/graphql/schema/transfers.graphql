@@ -1,0 +1,14 @@
+extend type Query {
+  transfers(
+    chainId: String
+    fromBlock: Int
+    toBlock: Int
+    address: String
+    token: String
+    minValue: BigInt
+    maxValue: BigInt
+    limit: Int = 20
+    cursor: String
+    direction: SortDirection = DESC
+  ): TransferConnection!
+}

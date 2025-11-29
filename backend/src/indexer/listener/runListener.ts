@@ -1,29 +1,29 @@
 import type { Log } from 'ethers';
 
-import '../env.ts';
-import type { ChainConfig } from '../chains/types.ts';
+import '../env';
+import type { ChainConfig } from '../chains/types';
 import {
   getContributionsCollection,
   getPoiEventsCollection,
   getStakingEventsCollection
-} from '../db/mongo.ts';
-import { saveTransfer } from '../db/transfers.ts';
-import { logger } from '../logger.ts';
-import { getChainConfig } from '../chains/index.ts';
-import { parseTransfer, TRANSFER_TOPIC } from '../parsers/erc20.ts';
+} from '../db/mongo';
+import { saveTransfer } from '../db/transfers';
+import { logger } from '../logger';
+import { getChainConfig } from '../chains/index';
+import { parseTransfer, TRANSFER_TOPIC } from '../parsers/erc20';
 import {
   parseStakingEvent,
   REWARD_TOPIC,
   STAKED_TOPIC,
   UNSTAKED_TOPIC
-} from '../parsers/staking.ts';
-import { parseProofSubmitted, PROOF_SUBMITTED_TOPIC } from '../parsers/poi.ts';
+} from '../parsers/staking';
+import { parseProofSubmitted, PROOF_SUBMITTED_TOPIC } from '../parsers/poi';
 import {
   CONTRIBUTION_RECORDED_TOPIC,
   parseContributionRecorded
-} from '../parsers/contributions.ts';
-import { getProvider, obfuscateRpcUrl, type RateLimitedProvider } from '../services/provider.ts';
-import { withRetry } from '../utils/retry.ts';
+} from '../parsers/contributions';
+import { getProvider, obfuscateRpcUrl, type RateLimitedProvider } from '../services/provider';
+import { withRetry } from '../utils/retry';
 
 type ContractTarget = { address: string; deployBlock: number };
 

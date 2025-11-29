@@ -12,7 +12,7 @@ import {IIndexFlowStaking} from "./interfaces/IIndexFlowStaking.sol";
 /// @notice Handles Proof of Indexing submissions and reward routing between indexers and delegators.
 contract IndexFlowRewards is AccessControl, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
-
+        
     bytes32 public constant COORDINATOR_ROLE = keccak256("COORDINATOR_ROLE");
 
     uint16 public constant BASIS_POINTS = 10_000;

@@ -12,6 +12,8 @@ const STAKING_REWARDS_ADDRESS = process.env.STAKING_REWARDS_ADDRESS;
 const REGISTRY_ADDRESS = process.env.REGISTRY_ADDRESS;
 const MIN_STAKE = process.env.MIN_STAKE ?? "0.5"; // ether
 const HEARTBEAT_INTERVAL_MS = Number(process.env.HEARTBEAT_INTERVAL_MS ?? 5000);
+const VALIDATOR_NAME = process.env.VALIDATOR_NAME;
+const VALIDATOR_ENDPOINT = process.env.VALIDATOR_ENDPOINT;
 
 if (!VALIDATOR_KEY || !STAKING_REWARDS_ADDRESS || !REGISTRY_ADDRESS) {
   throw new Error("Missing RPC/contract configuration. Set VALIDATOR_KEY, STAKING_REWARDS_ADDRESS and REGISTRY_ADDRESS in .env");
@@ -29,6 +31,7 @@ async function ensureValidatorReady() {
     await tx.wait();
     console.log(`Registered validator ${wallet.address}`);
   }
+  await ensureMetadata();
 
   const currentStake: bigint = await staking.stakes(wallet.address);
   const minStakeWei = ethers.parseEther(MIN_STAKE);
@@ -38,6 +41,31 @@ async function ensureValidatorReady() {
     const tx = await staking.deposit({ value: topUp });
     await tx.wait();
     console.log(`Deposited ${ethers.formatEther(topUp)} ETH to reach target stake`);
+  }
+}
+
+async function ensureMetadata() {
+  if (!VALIDATOR_NAME && !VALIDATOR_ENDPOINT) {
+    return;
+  }
+
+  try {
+    const metadata = await registry.validatorMetadata(wallet.address);
+    const currentName = metadata.name ?? metadata[0] ?? "";
+    const currentEndpoint = metadata.endpoint ?? metadata[1] ?? "";
+
+    const targetName = VALIDATOR_NAME ?? "";
+    const targetEndpoint = VALIDATOR_ENDPOINT ?? "";
+
+    if (currentName === targetName && currentEndpoint === targetEndpoint) {
+      return;
+    }
+
+    const tx = await registry.setMetadata(targetName, targetEndpoint);
+    await tx.wait();
+    console.log(`Updated metadata -> name="${targetName}" endpoint="${targetEndpoint}"`);
+  } catch (error) {
+    console.error(`Metadata update failed: ${(error as Error).message}`);
   }
 }
 

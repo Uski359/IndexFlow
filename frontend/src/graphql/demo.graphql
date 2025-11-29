@@ -1,0 +1,17 @@
+query DemoPage($limit: Int!) {
+  latestBlock {
+    number
+    chainId
+  }
+  transfers(limit: $limit, direction: DESC) {
+    items {
+      id
+      from
+      to
+      value
+      blockNumber
+      txHash
+    }
+    nextCursor
+  }
+}

@@ -13,6 +13,8 @@ Sepolia için ERC-20 transferlerini indeksleyen ve GraphQL API üzerinden sunan 
 - `PROVER_PRIVATE_KEY` sağlandığında indexer her batch'i imzalayıp `proverAddress/proverSignature` saklar.
 - Verifier script'i Merkle root'u yeniden hesaplayıp `BatchAttestation` kayıtlarını oluşturur.
 - Koordinatör servisi: epoch bazlı PoI skorlaması ve ödül payload hazırlığı.
+- Prometheus uyumlu GET /metrics (indexed_blocks_total, erc20_transfers_total vb.) uç noktası.
+- Koordinatör köprüsü: yeterli attestation biriktiğinde PoI batch'lerini IndexFlowRewards staking/rewards kontratına on-chain olarak iletir.
 - `multichain_fetch.js` ile Sepolia + Base/Polygon testnet gibi ağlardan hızlı ERC-20 transfer özetleri.
 - Healthcheck: `GET /health` → `ok: <lastIndexedBlock>`.
 
@@ -63,14 +65,23 @@ Indexlama tamamlandıkça `src/indexer.ts` loglarında batch aralıkları ve kay
 
 ```graphql
 query LatestTransfers {
-  transfers(chainId: "sepolia", limit: 5) {
-    chainId
-    txHash
-    token
-    from
-    to
-    value
-    blockNumber
+  transfers(
+    chainId: "sepolia"
+    limit: 5
+    fromTimestamp: "1700000000"
+    toTimestamp: "1700003600"
+  ) {
+    items {
+      chainId
+      txHash
+      token
+      from
+      to
+      value
+      blockNumber
+      timestamp
+    }
+    nextCursor
   }
 }
 ```
@@ -174,7 +185,12 @@ Koordinatör çıktısını kontrata taşımak için:
 - **Migrasyon hatası**: `npm run migrate` öncesinde veritabanının temiz olduğundan emin olun; gerekiyorsa `docker compose down -v` komutuyla volume'u sıfırlayın.
 - **Başlangıç bloğu çok yeni**: `START_BLOCK` değerini daha eski bir bloğa çekip indexer'ı yeniden başlatın.
 
-## Sonraki Adımlar (TODO'lar)
-1. `transfers` query'sine zaman aralığı filtresi ve cursor tabanlı pagination eklemek.
-2. `GET /metrics` ile Prometheus metrikleri (`indexed_blocks_total`, `erc20_transfers_total`).
-3. Koordinatör servisi ve staking/reward akıllı kontratı ile PoI attestasyonlarını zincire taşıyacak akışı tamamlamak.
+1. ElasticSearch tabanl� adres/tx arama katman� eklemek.
+2. Koordinat�r k�pr�s� i�in slashing/sinyal politikalar�n� ve tekrar deneme stratejilerini eklemek.
+3. Frontend'e Prometheus metriklerinden beslenen kompakt bir operat�r paneli eklemek.
+
+
+## Monitoring (Prometheus + Grafana)
+- `docker compose up -d prometheus grafana` komutu yerel Prometheus (9090) ve Grafana (3001) servislerini ba�lat�r; varsay�lan Grafana giri�i `admin / admin`dir.
+- Prometheus konfig�rasyonu `monitoring/prometheus.yml` dosyas�nda `index-node:4000/metrics` hedefini otomatik olarak scrape eder.
+- Grafana provisioning (`monitoring/grafana/...`) i�inde Prometheus veri kayna�� ve "IndexFlow Index Node" dashboard'u (blok sayac�, throughput, GraphQL hacmi/latency) otomatik tan�mlan�r; yeni panelleri ayn� dizinde JSON olarak ekleyebilirsiniz.

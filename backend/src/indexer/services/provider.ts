@@ -1,11 +1,11 @@
 import { JsonRpcProvider, type Filter, type Log } from 'ethers';
 import Bottleneck from 'bottleneck';
 
-import type { ChainConfig } from '../chains/types.ts';
-import { getChainConfig } from '../chains/index.ts';
-import { logger } from '../logger.ts';
-import { withRetry } from '../utils/retry.ts';
-import { createRpcLimiter } from './ratelimiter.ts';
+import type { ChainConfig } from '../chains/types';
+import { getChainConfig } from '../chains/index';
+import { logger } from '../logger';
+import { withRetry } from '../utils/retry';
+import { createRpcLimiter } from './ratelimiter';
 
 export interface RateLimitedProvider {
   chain: ChainConfig;

@@ -1,0 +1,34 @@
+scalar BigInt
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
+type Block {
+  chainId: String!
+  number: Int!
+}
+
+type Transfer {
+  id: String!
+  txHash: String!
+  from: String!
+  to: String!
+  value: String!
+  blockNumber: Int!
+}
+
+type TransferConnection {
+  items: [Transfer!]!
+  nextCursor: String
+}
+
+type Query {
+  latestBlock: Block
+  transfers(
+    limit: Int = 20
+    cursor: String
+    direction: SortDirection = DESC
+  ): TransferConnection!
+}

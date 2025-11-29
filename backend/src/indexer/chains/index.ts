@@ -1,9 +1,9 @@
-import type { ChainConfig } from './types.ts';
-import { SEPOLIA } from './sepolia.ts';
-import { POLYGON } from './polygon.ts';
-import { ARBITRUM } from './arbitrum.ts';
-import { BASE } from './base.ts';
-import { OPTIMISM } from './optimism.ts';
+import type { ChainConfig } from './types';
+import { SEPOLIA } from './sepolia';
+import { POLYGON } from './polygon';
+import { ARBITRUM } from './arbitrum';
+import { BASE } from './base';
+import { OPTIMISM } from './optimism';
 
 export const CHAINS: Record<string, ChainConfig> = {
   sepolia: SEPOLIA,

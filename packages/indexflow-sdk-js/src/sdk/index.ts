@@ -10,14 +10,12 @@ import {
 } from '../../scripts/mockData.js';
 
 const validatorRegistryAbi = [
-  'function isValidator(address validator) view returns (bool)',
-  'function validatorStake(address validator) view returns (uint256)',
-  'function validatorMetadata(address validator) view returns (tuple(string name, string endpoint))'
+  'function getValidator(address validator) view returns (tuple(address node,uint256 stake,bool active,uint256 lastProof))',
+  'function validatorMetadata(address validator) view returns (string name, string endpoint)'
 ];
 
 const stakingRewardsAbi = [
-  'function earned(address user) view returns (uint256)',
-  'function rewardRate() view returns (uint256)'
+  'function previewReward(address validator) view returns (uint256)'
 ];
 
 const rpcUrl = process.env.RPC_URL ?? 'https://ethereum.publicnode.com';
@@ -59,15 +57,17 @@ async function getOnChainSnapshot(validator: string, account: string): Promise<P
     };
   }
 
-  const [isValidator, validatorStake, pendingRewards] = await Promise.all([
-    safeCall(() => registry.isValidator(validator), false),
-    safeCall(() => registry.validatorStake(validator), 0n),
-    safeCall(() => rewards.earned(account), 0n)
+  const [validatorData, pendingRewards] = await Promise.all([
+    safeCall(() => registry.getValidator(validator), null),
+    safeCall(() => rewards.previewReward(validator), 0n)
   ]);
 
+  const stake = validatorData ? (validatorData.stake ?? validatorData[1] ?? 0n) : 0n;
+  const active = validatorData ? Boolean(validatorData.active ?? validatorData[2]) : false;
+
   return {
-    validatorActive: isValidator,
-    validatorStake: validatorStake === 0n ? '0' : formatUnits(validatorStake, 18),
+    validatorActive: active,
+    validatorStake: stake === 0n ? '0' : formatUnits(stake, 18),
     pendingRewards: pendingRewards === 0n ? '0' : formatUnits(pendingRewards, 18)
   };
 }

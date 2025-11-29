@@ -1,11 +1,15 @@
-import { Interface, Log, LogDescription, TransactionResponse } from "ethers";
+import { Interface, JsonRpcProvider, Log, LogDescription, TransactionResponse } from "ethers";
 import promiseRetry from "promise-retry";
 import { env } from "@config/env";
 import { prisma } from "@db/prisma";
-import { provider } from "@indexer/provider";
 import { logger } from "@telemetry/logger";
+import {
+  recordIndexerBatchMetrics,
+  recordIndexerError
+} from "@telemetry/metrics";
 import { computeMerkleRootFromTransfers, TransferLike } from "@utils/merkle";
 import { sleep } from "@utils/sleep";
+import { withRpcProvider } from "@eth/client";
 
 const TRANSFER_INTERFACE = new Interface([
   "event Transfer(address indexed from, address indexed to, uint256 value)"
@@ -18,8 +22,10 @@ const TRANSFER_TOPIC = TRANSFER_EVENT.topicHash;
 
 const BATCH_ID_SEPARATOR = ":";
 const ZERO_HASH = `0x${"0".repeat(64)}`;
+const LOG_FETCH_CHUNK_SIZE = 250;
+const LOG_FETCH_CONCURRENCY = 3;
 
-type ProviderBlock = Awaited<ReturnType<typeof provider.getBlock>>;
+type ProviderBlock = Awaited<ReturnType<JsonRpcProvider["getBlock"]>>;
 type BlockWithTransactions = ProviderBlock & { transactions: TransactionResponse[] };
 
 export interface IndexerControl {
@@ -30,12 +36,14 @@ export interface IndexerControl {
 export class Indexer implements IndexerControl {
   private running = false;
   private nextBlockNumber: number | null = null;
+  private healthLogInterval: NodeJS.Timeout | null = null;
 
   constructor(
     private readonly chainId = env.CHAIN_ID,
     private readonly batchSize = env.BATCH_SIZE,
     private readonly confirmations = env.CONFIRMATIONS,
-    private readonly pollIntervalMs = env.INDEX_POLL_INTERVAL_MS
+    private readonly pollIntervalMs = env.INDEX_POLL_INTERVAL_MS,
+    private readonly healthLogIntervalMs = env.HEALTH_LOG_INTERVAL_MS
   ) {}
 
   async start(): Promise<void> {
@@ -44,12 +52,14 @@ export class Indexer implements IndexerControl {
     }
     this.running = true;
     await this.initializeCursor();
+    this.startHealthLogging();
 
     while (this.running) {
       try {
         await this.runCycle();
       } catch (error) {
         logger.error({ error }, "Indexer cycle failed");
+        recordIndexerError("cycle");
         await sleep(this.pollIntervalMs);
       }
     }
@@ -57,6 +67,7 @@ export class Indexer implements IndexerControl {
 
   async stop(): Promise<void> {
     this.running = false;
+    this.stopHealthLogging();
   }
 
   private async initializeCursor() {
@@ -77,7 +88,7 @@ export class Indexer implements IndexerControl {
       return;
     }
 
-    const latestBlock = await provider.getBlockNumber();
+    const latestBlock = await withRpcProvider((rpc) => rpc.getBlockNumber());
     const safeBlock = latestBlock - this.confirmations;
     const configuredStart = env.START_BLOCK;
     const startingBlock =
@@ -113,7 +124,7 @@ export class Indexer implements IndexerControl {
       }
     }
 
-    const latestBlockNumber = await provider.getBlockNumber();
+    const latestBlockNumber = await withRpcProvider((rpc) => rpc.getBlockNumber());
     const safeBlockNumber = latestBlockNumber - this.confirmations;
 
     if (this.nextBlockNumber > safeBlockNumber) {
@@ -165,7 +176,7 @@ export class Indexer implements IndexerControl {
         promiseRetry<BlockWithTransactions>(
           async (retry) => {
             try {
-              const block = await provider.getBlock(blockNumber, true);
+              const block = await withRpcProvider((rpc) => rpc.getBlock(blockNumber, true));
               if (!block) {
                 throw new Error("Block not found");
               }
@@ -174,11 +185,15 @@ export class Indexer implements IndexerControl {
                 block.transactions.length > 0 &&
                 typeof block.transactions[0] === "string"
               ) {
-                throw new Error("Expected full transactions but received hashes");
+                const fullTransactions = await this.fetchTransactions(
+                  block.transactions as string[]
+                );
+                return { ...block, transactions: fullTransactions } as BlockWithTransactions;
               }
               return block as BlockWithTransactions;
             } catch (error) {
-              logger.warn({ error, blockNumber }, "Failed to fetch block, retrying");
+              // Use `err` key so pino prints message/stack for easier debugging.
+              logger.warn({ err: error, blockNumber }, "Failed to fetch block, retrying");
               retry(error as Error);
               throw error;
             }
@@ -191,25 +206,90 @@ export class Indexer implements IndexerControl {
     return blocks;
   }
 
-  private async fetchTransferLogs(startBlock: number, endBlock: number): Promise<TransferLike[]> {
-    const rawLogs = await promiseRetry<Log[]>(
-      async (retry) => {
-        try {
-          return await provider.getLogs({
-            fromBlock: startBlock,
-            toBlock: endBlock,
-            topics: [TRANSFER_TOPIC]
-          });
-        } catch (error) {
-          logger.warn({ error }, "Failed to fetch transfer logs, retrying");
-          retry(error as Error);
-          throw error;
-        }
-      },
-      { retries: 5, minTimeout: 500, maxTimeout: 2_000 }
-    );
+  private async fetchTransactions(hashes: string[]): Promise<TransactionResponse[]> {
+    const results: TransactionResponse[] = [];
 
-    return rawLogs.map((log) => this.parseTransferLog(log)).filter(Boolean) as TransferLike[];
+    for (const hash of hashes) {
+      const tx = await promiseRetry<TransactionResponse>(
+        async (retry) => {
+          try {
+            const fetched = await withRpcProvider((rpc) => rpc.getTransaction(hash));
+            if (!fetched) {
+              throw new Error("Transaction not found");
+            }
+            return fetched;
+          } catch (error) {
+            logger.warn({ err: error, hash }, "Failed to fetch transaction, retrying");
+            retry(error as Error);
+            throw error;
+          }
+        },
+        { retries: 3, minTimeout: 500, maxTimeout: 2_000 }
+      );
+
+      results.push(tx);
+      // Small pause to avoid bursting RPC limits when blocks return many hashes.
+      await sleep(150);
+    }
+
+    return results;
+  }
+
+  private async fetchTransferLogs(startBlock: number, endBlock: number): Promise<TransferLike[]> {
+    const tasks: Array<() => Promise<Log[]>> = [];
+
+    for (let from = startBlock; from <= endBlock; from += LOG_FETCH_CHUNK_SIZE) {
+      const to = Math.min(from + LOG_FETCH_CHUNK_SIZE - 1, endBlock);
+      tasks.push(async () =>
+        promiseRetry<Log[]>(
+          async (retry) => {
+            try {
+              return await withRpcProvider((rpc) =>
+                rpc.getLogs({
+                  fromBlock: from,
+                  toBlock: to,
+                  topics: [TRANSFER_TOPIC]
+                })
+              );
+            } catch (error) {
+              logger.warn(
+                { err: error, fromBlock: from, toBlock: to },
+                "Failed to fetch transfer logs chunk, retrying"
+              );
+              retry(error as Error);
+              throw error;
+            }
+          },
+          { retries: 5, minTimeout: 500, maxTimeout: 2_000 }
+        )
+      );
+    }
+
+    const chunks = await this.runWithConcurrency(tasks, LOG_FETCH_CONCURRENCY);
+    const collected = chunks.flat();
+
+    return collected.map((log) => this.parseTransferLog(log)).filter(Boolean) as TransferLike[];
+  }
+
+  private async runWithConcurrency<T>(
+    tasks: Array<() => Promise<T>>,
+    limit: number
+  ): Promise<T[]> {
+    const results: T[] = [];
+    let cursor = 0;
+    const worker = async () => {
+      while (true) {
+        const current = cursor;
+        cursor += 1;
+        if (current >= tasks.length) {
+          return;
+        }
+        results[current] = await tasks[current]();
+      }
+    };
+    const workers = Array.from({ length: Math.min(limit, tasks.length) }, () => worker());
+    await Promise.all(workers);
+    return results;
   }
 
   private parseTransferLog(log: Log): TransferLike | null {
@@ -308,6 +388,56 @@ export class Indexer implements IndexerControl {
     });
 
     this.nextBlockNumber = Math.max(revertToBlock + 1, 0);
+  }
+
+  private startHealthLogging() {
+    if (this.healthLogInterval) {
+      return;
+    }
+    this.healthLogInterval = setInterval(() => {
+      void this.logHealth();
+    }, this.healthLogIntervalMs);
+    if (typeof this.healthLogInterval.unref === "function") {
+      this.healthLogInterval.unref();
+    }
+  }
+
+  private stopHealthLogging() {
+    if (!this.healthLogInterval) {
+      return;
+    }
+    clearInterval(this.healthLogInterval);
+    this.healthLogInterval = null;
+  }
+
+  private async logHealth() {
+    try {
+      const [checkpoint, transferCount, blockCount] = await Promise.all([
+        prisma.indexerCheckpoint.findUnique({
+          where: { chainId: this.chainId }
+        }),
+        prisma.erc20Transfer.count({
+          where: { chainId: this.chainId }
+        }),
+        prisma.block.count({
+          where: { chainId: this.chainId }
+        })
+      ]);
+
+      logger.info(
+        {
+          chainId: this.chainId,
+          lastIndexedBlock: checkpoint?.lastIndexedBlock ?? null,
+          safeBlockNumber: checkpoint?.safeBlockNumber ?? null,
+          blocks: blockCount,
+          transfers: transferCount
+        },
+        "Indexer health"
+      );
+    } catch (error) {
+      logger.warn({ error }, "Failed to emit indexer health log");
+      recordIndexerError("health");
+    }
   }
 
   private async persistBatch(
@@ -450,6 +580,14 @@ export class Indexer implements IndexerControl {
       },
       "Indexed new batch"
     );
+
+    recordIndexerBatchMetrics({
+      blocks: blocks.length,
+      transactions: totalTransactions,
+      transfers: transfers.length,
+      lastIndexedBlock: end,
+      safeBlockNumber
+    });
   }
 }
 

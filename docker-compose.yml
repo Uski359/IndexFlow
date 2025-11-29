@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:15-alpine
@@ -9,35 +7,62 @@ services:
       POSTGRES_USER: indexflow
       POSTGRES_PASSWORD: indexflow
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
   index-node:
     build:
-      context: ./index-node
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: index-node/Dockerfile
     environment:
       DATABASE_URL: postgresql://indexflow:indexflow@db:5432/indexflow
-      RPC_URL: https://sepolia.infura.io/v3/YOUR_KEY
+      RPC_URL: https://eth-sepolia.g.alchemy.com/v2/vtMDks-q4F59s_mGE9HGg
       CHAIN_ID: sepolia
     depends_on:
       - db
     ports:
-      - "4000:4000"
+      # Expose index-node on a non-conflicting host port; container still listens on 4000 internally.
+      - "14000:4000"
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
     environment:
       NEXT_PUBLIC_INDEX_NODE_URL: http://index-node:4000/graphql
-      NEXT_PUBLIC_RPC_URL: https://sepolia.infura.io/v3/YOUR_KEY
+      NEXT_PUBLIC_RPC_URL: https://eth-sepolia.g.alchemy.com/v2/vtMDks-q4F59s_mGE9HGg
       NEXT_PUBLIC_STAKING_CONTRACT: 0x0000000000000000000000000000000000000000
     depends_on:
       - index-node
     ports:
       - "3000:3000"
 
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    depends_on:
+      - index-node
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    depends_on:
+      - prometheus
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+
 volumes:
   postgres-data:
+  prometheus-data:
+  grafana-data:

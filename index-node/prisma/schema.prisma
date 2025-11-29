@@ -76,6 +76,12 @@ model IndexedBatch {
   proverAddress     String?
   proverSignature   String?
   sqlStatement      String?
+  rewardAmount      String?
+  onchainStatus     OnchainSubmissionStatus @default(NOT_READY)
+  onchainTxHash     String?
+  onchainSubmittedAt DateTime?
+  onchainError      String?
+  lastSubmissionAttempt DateTime?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -84,11 +90,19 @@ model IndexedBatch {
   @@id([chainId, id])
   @@unique([chainId, startBlock, endBlock])
   @@index([chainId, createdAt])
+  @@index([chainId, onchainStatus])
 }
 
 enum AttestationStatus {
   VALID
   INVALID
+}
+
+enum OnchainSubmissionStatus {
+  NOT_READY
+  PENDING
+  CONFIRMED
+  FAILED
 }
 
 model BatchAttestation {

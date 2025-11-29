@@ -1,4 +1,4 @@
-# Validator Lifecycle
+﻿# Validator Lifecycle
 
 This MVP keeps the validator experience intentionally simple so we can focus on demonstrating proof-of-indexing. The full lifecycle looks like this:
 
@@ -21,4 +21,13 @@ This MVP keeps the validator experience intentionally simple so we can focus on 
 5. **Deactivate:**
    - Validators can call `ValidatorRegistry.deactivate()` at any point. This freezes rewards but keeps historical data intact so explorers can show churn.
 
-This flow is intentionally optimistic�future iterations would plug in proof verification against real indexer outputs, slash inactive nodes, and stream rewards from protocol revenue.
+This flow is intentionally optimistic—future iterations would plug in proof verification against real indexer outputs, slash inactive nodes, and stream rewards from protocol revenue.
+
+## Running the Demo Locally
+
+1. Deploy the contracts in `packages/indexflow-validator-mvp` (see its README) to Hardhat or Sepolia.
+2. Copy `env.sample` to `.env`, paste the deployed addresses, and set `VALIDATOR_KEY`, `VALIDATOR_NAME`, and `VALIDATOR_ENDPOINT`.
+3. Run `pnpm run heartbeat --filter indexflow-validator-mvp` to register, stake, publish metadata, and start submitting proofs every few seconds.
+4. Point `packages/indexflow-sdk-js` at the same addresses (`VALIDATOR_REGISTRY_ADDRESS`, `STAKING_REWARDS_ADDRESS`) so GraphQL queries return live `validatorActive`, `validatorStake`, and `pendingRewards` values.
+
+With those pieces running, the end-to-end validator + rewards pipeline is visible from both the smart contracts (via Hardhat console) and the SDK-powered dashboards.

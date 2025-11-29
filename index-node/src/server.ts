@@ -4,12 +4,14 @@ import helmet from "helmet";
 import compression from "compression";
 import bodyParser from "body-parser";
 import { ApolloServer } from "@apollo/server";
+import { GraphQLError } from "graphql";
 import { expressMiddleware } from "@apollo/server/express4";
 import { env } from "@config/env";
 import { schema } from "@graphql/schema";
 import { prisma } from "@db/prisma";
 import { logger } from "@telemetry/logger";
 import { requestProofOfSql } from "@proofs/sql";
+import { collectMetrics, graphQLMetricsPlugin, metricsContentType } from "@telemetry/metrics";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 
 const rateLimiter = new RateLimiterMemory({
@@ -29,9 +31,15 @@ const rateLimiterMiddleware: express.RequestHandler = async (req, res, next) => 
 export async function startServer() {
   const server = new ApolloServer({
     schema,
-    formatError(formattedError) {
-      logger.warn({ error: formattedError }, "GraphQL error");
-      return formattedError;
+    plugins: [graphQLMetricsPlugin],
+    formatError(formattedError, error) {
+      const original = error instanceof GraphQLError ? error : undefined;
+      logger.warn({ error: original ?? formattedError }, "GraphQL error");
+      return {
+        message: formattedError.message,
+        code: formattedError.extensions?.code ?? "INTERNAL_ERROR",
+        field: (formattedError.extensions as { field?: string } | undefined)?.field ?? null
+      } as unknown as import("graphql").GraphQLFormattedError;
     }
   });
 
@@ -83,6 +91,17 @@ export async function startServer() {
     } catch (error) {
       logger.error({ error }, "Proof of SQL endpoint error");
       res.status(500).json({ error: "Unable to queue Proof of SQL request" });
+    }
+  });
+
+  app.get("/metrics", async (_req, res) => {
+    try {
+      const body = await collectMetrics();
+      res.set("Content-Type", metricsContentType());
+      res.send(body);
+    } catch (error) {
+      logger.error({ error }, "Unable to collect Prometheus metrics");
+      res.status(500).json({ error: "metrics_unavailable" });
     }
   });
 

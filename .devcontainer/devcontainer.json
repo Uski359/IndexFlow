@@ -1,0 +1,25 @@
+{
+    "postAttachCommand": "./codespace-start.sh",
+    "name": "IndexFlow Dev",
+    "image": "mcr.microsoft.com/devcontainers/javascript-node:latest",
+    "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.fontSize": 16,
+        "editor.tabSize": 2,
+        "terminal.integrated.fontSize": 15,
+        "workbench.colorTheme": "Default Dark+"
+      },
+      "extensions": [
+        "ms-vscode.vscode-typescript-next",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "formulahendry.code-runner",
+        "github.codespaces",
+        "github.copilot",
+        "github.copilot-chat"
+      ]
+    }
+  },
+  "postCreateCommand": "npm install -g pnpm && pnpm install"
+}

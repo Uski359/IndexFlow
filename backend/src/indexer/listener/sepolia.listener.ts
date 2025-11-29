@@ -1,5 +1,5 @@
-import { logger } from '../logger.ts';
-import { runListener } from './runListener.ts';
+import { logger } from '../logger';
+import { runListener } from './runListener';
 
 runListener('sepolia').catch((error: unknown) => {
   logger.error('Fatal error in Sepolia listener', { chainId: 'sepolia', err: error });

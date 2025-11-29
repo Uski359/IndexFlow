@@ -4,11 +4,17 @@ import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { MoonStar, SunMedium } from "lucide-react";
 
+const THEME_TOGGLE_ENABLED = false;
+
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
+
+  if (!THEME_TOGGLE_ENABLED) {
+    return null;
+  }
 
   const isDark = resolvedTheme === "dark";
 

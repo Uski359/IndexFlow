@@ -1,5 +1,5 @@
-import { logger } from '../logger.ts';
-import { runBackfill } from './runBackfill.ts';
+import { logger } from '../logger';
+import { runBackfill } from './runBackfill';
 
 runBackfill('bnb').catch((error: unknown) => {
   logger.error('BNB Chain backfill failed', { chainId: 'bnb', err: error });

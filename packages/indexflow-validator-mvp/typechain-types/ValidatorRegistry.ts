@@ -45,12 +45,16 @@ export interface ValidatorRegistryInterface extends Interface {
       | "deactivate"
       | "getActiveValidators"
       | "getValidator"
+      | "isValidator"
       | "owner"
       | "register"
+      | "setMetadata"
       | "setStakingContract"
       | "stakingContract"
       | "updateLastProof"
       | "updateStake"
+      | "validatorMetadata"
+      | "validatorStake"
   ): FunctionFragment;
 
   getEvent(
@@ -59,6 +63,7 @@ export interface ValidatorRegistryInterface extends Interface {
       | "StakeUpdated"
       | "StakingContractSet"
       | "ValidatorDeactivated"
+      | "ValidatorMetadataUpdated"
       | "ValidatorRegistered"
   ): EventFragment;
 
@@ -74,8 +79,16 @@ export interface ValidatorRegistryInterface extends Interface {
     functionFragment: "getValidator",
     values: [AddressLike]
   ): string;
+  encodeFunctionData(
+    functionFragment: "isValidator",
+    values: [AddressLike]
+  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(functionFragment: "register", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "setMetadata",
+    values: [string, string]
+  ): string;
   encodeFunctionData(
     functionFragment: "setStakingContract",
     values: [AddressLike]
@@ -92,6 +105,14 @@ export interface ValidatorRegistryInterface extends Interface {
     functionFragment: "updateStake",
     values: [AddressLike, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "validatorMetadata",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "validatorStake",
+    values: [AddressLike]
+  ): string;
 
   decodeFunctionResult(functionFragment: "deactivate", data: BytesLike): Result;
   decodeFunctionResult(
@@ -102,8 +123,16 @@ export interface ValidatorRegistryInterface extends Interface {
     functionFragment: "getValidator",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "isValidator",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "register", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setMetadata",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "setStakingContract",
     data: BytesLike
@@ -118,6 +147,14 @@ export interface ValidatorRegistryInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "updateStake",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "validatorMetadata",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "validatorStake",
     data: BytesLike
   ): Result;
 }
@@ -166,6 +203,20 @@ export namespace ValidatorDeactivatedEvent {
   export interface OutputObject {
     node: string;
     timestamp: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ValidatorMetadataUpdatedEvent {
+  export type InputTuple = [node: AddressLike, name: string, endpoint: string];
+  export type OutputTuple = [node: string, name: string, endpoint: string];
+  export interface OutputObject {
+    node: string;
+    name: string;
+    endpoint: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -243,9 +294,17 @@ export interface ValidatorRegistry extends BaseContract {
     "view"
   >;
 
+  isValidator: TypedContractMethod<[node: AddressLike], [boolean], "view">;
+
   owner: TypedContractMethod<[], [string], "view">;
 
   register: TypedContractMethod<[], [void], "nonpayable">;
+
+  setMetadata: TypedContractMethod<
+    [name: string, endpoint: string],
+    [void],
+    "nonpayable"
+  >;
 
   setStakingContract: TypedContractMethod<
     [_staking: AddressLike],
@@ -266,6 +325,14 @@ export interface ValidatorRegistry extends BaseContract {
     [void],
     "nonpayable"
   >;
+
+  validatorMetadata: TypedContractMethod<
+    [node: AddressLike],
+    [[string, string] & { name: string; endpoint: string }],
+    "view"
+  >;
+
+  validatorStake: TypedContractMethod<[node: AddressLike], [bigint], "view">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
@@ -289,11 +356,21 @@ export interface ValidatorRegistry extends BaseContract {
     "view"
   >;
   getFunction(
+    nameOrSignature: "isValidator"
+  ): TypedContractMethod<[node: AddressLike], [boolean], "view">;
+  getFunction(
     nameOrSignature: "owner"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "register"
   ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "setMetadata"
+  ): TypedContractMethod<
+    [name: string, endpoint: string],
+    [void],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "setStakingContract"
   ): TypedContractMethod<[_staking: AddressLike], [void], "nonpayable">;
@@ -314,6 +391,16 @@ export interface ValidatorRegistry extends BaseContract {
     [void],
     "nonpayable"
   >;
+  getFunction(
+    nameOrSignature: "validatorMetadata"
+  ): TypedContractMethod<
+    [node: AddressLike],
+    [[string, string] & { name: string; endpoint: string }],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "validatorStake"
+  ): TypedContractMethod<[node: AddressLike], [bigint], "view">;
 
   getEvent(
     key: "ProofTimestampUpdated"
@@ -342,6 +429,13 @@ export interface ValidatorRegistry extends BaseContract {
     ValidatorDeactivatedEvent.InputTuple,
     ValidatorDeactivatedEvent.OutputTuple,
     ValidatorDeactivatedEvent.OutputObject
+  >;
+  getEvent(
+    key: "ValidatorMetadataUpdated"
+  ): TypedContractEvent<
+    ValidatorMetadataUpdatedEvent.InputTuple,
+    ValidatorMetadataUpdatedEvent.OutputTuple,
+    ValidatorMetadataUpdatedEvent.OutputObject
   >;
   getEvent(
     key: "ValidatorRegistered"
@@ -394,6 +488,17 @@ export interface ValidatorRegistry extends BaseContract {
       ValidatorDeactivatedEvent.InputTuple,
       ValidatorDeactivatedEvent.OutputTuple,
       ValidatorDeactivatedEvent.OutputObject
+    >;
+
+    "ValidatorMetadataUpdated(address,string,string)": TypedContractEvent<
+      ValidatorMetadataUpdatedEvent.InputTuple,
+      ValidatorMetadataUpdatedEvent.OutputTuple,
+      ValidatorMetadataUpdatedEvent.OutputObject
+    >;
+    ValidatorMetadataUpdated: TypedContractEvent<
+      ValidatorMetadataUpdatedEvent.InputTuple,
+      ValidatorMetadataUpdatedEvent.OutputTuple,
+      ValidatorMetadataUpdatedEvent.OutputObject
     >;
 
     "ValidatorRegistered(address,uint256)": TypedContractEvent<

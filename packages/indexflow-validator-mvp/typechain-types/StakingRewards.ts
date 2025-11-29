@@ -31,9 +31,11 @@ export interface StakingRewardsInterface extends Interface {
       | "baseReward"
       | "deposit"
       | "fundRewardPool"
+      | "previewReward"
       | "proofHashUsed"
       | "registry"
       | "rewardManager"
+      | "rewardPoolBalance"
       | "rewardValidator"
       | "setRewardManager"
       | "setRewardParameters"
@@ -69,12 +71,20 @@ export interface StakingRewardsInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "previewReward",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "proofHashUsed",
     values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "registry", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "rewardManager",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "rewardPoolBalance",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -115,12 +125,20 @@ export interface StakingRewardsInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "previewReward",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "proofHashUsed",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "registry", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "rewardManager",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "rewardPoolBalance",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -320,11 +338,19 @@ export interface StakingRewards extends BaseContract {
 
   fundRewardPool: TypedContractMethod<[], [void], "payable">;
 
+  previewReward: TypedContractMethod<
+    [validator: AddressLike],
+    [bigint],
+    "view"
+  >;
+
   proofHashUsed: TypedContractMethod<[arg0: BytesLike], [boolean], "view">;
 
   registry: TypedContractMethod<[], [string], "view">;
 
   rewardManager: TypedContractMethod<[], [string], "view">;
+
+  rewardPoolBalance: TypedContractMethod<[], [bigint], "view">;
 
   rewardValidator: TypedContractMethod<
     [validator: AddressLike, rewardAmount: BigNumberish],
@@ -376,6 +402,9 @@ export interface StakingRewards extends BaseContract {
     nameOrSignature: "fundRewardPool"
   ): TypedContractMethod<[], [void], "payable">;
   getFunction(
+    nameOrSignature: "previewReward"
+  ): TypedContractMethod<[validator: AddressLike], [bigint], "view">;
+  getFunction(
     nameOrSignature: "proofHashUsed"
   ): TypedContractMethod<[arg0: BytesLike], [boolean], "view">;
   getFunction(
@@ -384,6 +413,9 @@ export interface StakingRewards extends BaseContract {
   getFunction(
     nameOrSignature: "rewardManager"
   ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "rewardPoolBalance"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "rewardValidator"
   ): TypedContractMethod<

@@ -2,7 +2,7 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ESNext",
+    "module": "CommonJS",
     "moduleResolution": "Node",
     "lib": ["ES2023"],
     "allowJs": false,
@@ -19,9 +19,11 @@
       "@db/*": ["src/db/*"],
       "@graphql/*": ["src/graphql/*"],
       "@indexer/*": ["src/indexer/*"],
+      "@coordinator/*": ["src/coordinator/*"],
       "@proofs/*": ["src/proofs/*"],
       "@telemetry/*": ["src/telemetry/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "@eth/*": ["src/eth/*"]
     }
   },
   "include": ["src/**/*.ts", "vitest.config.ts"],

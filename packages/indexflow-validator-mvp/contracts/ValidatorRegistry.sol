@@ -13,7 +13,13 @@ contract ValidatorRegistry {
         uint256 lastProof;
     }
 
+    struct Metadata {
+        string name;
+        string endpoint;
+    }
+
     mapping(address => Validator) private _validators;
+    mapping(address => Metadata) private _metadata;
     address[] private _validatorIndex;
 
     address public owner;
@@ -24,6 +30,7 @@ contract ValidatorRegistry {
     event StakeUpdated(address indexed node, uint256 newStake);
     event ProofTimestampUpdated(address indexed node, uint256 lastProof);
     event StakingContractSet(address indexed stakingContract);
+    event ValidatorMetadataUpdated(address indexed node, string name, string endpoint);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Not owner");
@@ -90,6 +97,26 @@ contract ValidatorRegistry {
 
     function getValidator(address node) external view returns (Validator memory) {
         return _validators[node];
+    }
+
+    function isValidator(address node) external view returns (bool) {
+        return _validators[node].active;
+    }
+
+    function validatorStake(address node) external view returns (uint256) {
+        return _validators[node].stake;
+    }
+
+    function setMetadata(string calldata name, string calldata endpoint) external {
+        Validator storage validator = _validators[msg.sender];
+        require(validator.node != address(0), "Validator not found");
+        _metadata[msg.sender] = Metadata({name: name, endpoint: endpoint});
+        emit ValidatorMetadataUpdated(msg.sender, name, endpoint);
+    }
+
+    function validatorMetadata(address node) external view returns (string memory name, string memory endpoint) {
+        Metadata storage meta = _metadata[node];
+        return (meta.name, meta.endpoint);
     }
 
     function updateStake(address node, uint256 newStake) external onlyStaking {

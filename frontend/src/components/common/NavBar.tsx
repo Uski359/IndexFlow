@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { WalletButton } from "@/components/common/WalletButton";
 
@@ -15,11 +16,9 @@ export function NavBar() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-indexflow-bg/70 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center gap-2 text-lg font-semibold text-white">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-indexflow-primary to-indexflow-secondary">
-            IF
-          </span>
-          <span>IndexFlow</span>
+        <Link href="/" className="flex items-center gap-3 text-lg font-semibold text-white">
+          <Image src="/logo.svg" alt="IndexFlow logo" width={40} height={40} priority className="h-10 w-10" />
+          <span className="leading-tight">IndexFlow</span>
         </Link>
         <nav className="hidden items-center gap-8 text-sm font-medium text-white/80 md:flex">
           {links.map((link) => (
