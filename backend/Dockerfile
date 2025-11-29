@@ -1,45 +1,60 @@
-# ------------------------------------------
-# Base deps (install all dependencies)
-# ------------------------------------------
-FROM node:20-alpine AS deps
+# ============================================
+# 1) BASE IMAGE
+# Node 20: packages/config -> mongodb@7, bson@7 uyumlu
+# ============================================
+FROM node:20-alpine AS base
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-COPY packages ./packages     # ❗ config package dahil
-COPY backend ./backend        # backend dahil
 
-WORKDIR /app/packages/config
+# ============================================
+# 2) INSTALL DEPS
+# Sadece backend'in kendi package.json dosyası
+# ============================================
+FROM base AS deps
+
+# Backend package.json
+COPY backend/package*.json ./
+
+# Root'taki packages/config'i include edeceğiz → build context . olmalı
+COPY packages ./packages
+
 RUN npm install
-RUN npx tsc -p tsconfig.json   # config package build → dist oluşur
 
-WORKDIR /app/backend
-RUN npm install
 
-# ------------------------------------------
-# Builder
-# ------------------------------------------
-FROM node:20-alpine AS builder
+# ============================================
+# 3) BUILDER STAGE – TypeScript build
+# ============================================
+FROM base AS builder
 WORKDIR /app
 
-# Dep'leri komple al
-COPY --from=deps /app ./
+# node_modules'ı kopyala
+COPY --from=deps /app/node_modules ./node_modules
 
-# Backend build
-WORKDIR /app/backend
+# Backend kaynak kodu
+COPY backend ./
+
+# packages/config'i tekrar dahil et (TS import pathleri için)
+COPY packages ./packages
+
+# Artık backend içinde tsconfig.prod.json var
 RUN npx tsc -p tsconfig.prod.json
 
-# ------------------------------------------
-# Runner
-# ------------------------------------------
+
+# ============================================
+# 4) RUNNER – minimal image
+# ============================================
 FROM node:20-alpine AS runner
-WORKDIR /app/backend
+WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY --from=builder /app/backend/dist ./dist
-COPY --from=builder /app/backend/package.json ./
+# Çalışması için dist + backend package.json yeterli
+COPY --from=builder /app/dist ./dist
+COPY backend/package*.json ./
 
-RUN npm install --omit=dev
+# node_modules
+COPY --from=deps /app/node_modules ./node_modules
 
 EXPOSE 4000
+
 CMD ["node", "dist/server.js"]
