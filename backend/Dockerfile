@@ -1,44 +1,45 @@
-# -----------------------------
-# 1) BASE IMAGE
-# -----------------------------
+# Base stage: install deps
 FROM node:20-alpine AS base
+
 WORKDIR /app
 
-# pnpm / corepack aktif
+# Corepack + pnpm
 RUN corepack enable
 
-COPY package.json pnpm-lock.yaml ./
+# Root files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY tsconfig.base.json ./tsconfig.base.json   # <-- EKLENMESİ GEREKEN SATIR
 
-COPY backend ./backend
+# Monorepo packages
 COPY packages ./packages
+COPY backend ./backend
+
+# Install all workspace deps
+RUN pnpm install --recursive
 
 # -----------------------------
-# 2) INSTALL ROOT DEPENDENCIES
-# -----------------------------
-RUN pnpm install --filter ./packages/config... \
-    && pnpm install --filter ./backend...
-
-# -----------------------------
-# 3) BUILD CONFIG PACKAGE
+# Build config package
 # -----------------------------
 WORKDIR /app/packages/config
-RUN pnpm build   # <-- dist klasörünü oluşturur!!
+RUN pnpm build   # <-- Artık tsconfig.base.json bulunacak!
 
 # -----------------------------
-# 4) BUILD BACKEND
+# Build backend
 # -----------------------------
 WORKDIR /app/backend
-RUN pnpm build   # tsconfig.prod.json kullanır
+RUN pnpm build
 
 # -----------------------------
-# 5) RUNNER
+# Final runner image
 # -----------------------------
 FROM node:20-alpine AS runner
+
 WORKDIR /app
 
 COPY --from=base /app/backend/dist ./dist
-COPY --from=base /app/backend/package.json ./package.json
 COPY --from=base /app/backend/node_modules ./node_modules
 
+ENV NODE_ENV=production
 EXPOSE 4000
+
 CMD ["node", "dist/server.js"]
