@@ -1,45 +1,49 @@
 # -------------------------------
-# 1) Base layer (modules installed at monorepo root)
+# 1) BASE IMAGE
 # -------------------------------
-FROM node:20-alpine AS deps
+FROM node:22-alpine AS base
 WORKDIR /app
 
-# Monorepo kök package ve tsconfig dosyalarını kopyala
+# -------------------------------
+# 2) INSTALL ROOT DEPS (packages/config dahil)
+# -------------------------------
 COPY package.json package-lock.json ./
-COPY tsconfig.base.json ./tsconfig.base.json
-
-# packages ve backend dizinlerini kopyala
 COPY packages ./packages
-COPY backend ./backend
-
-# Root install (config dahil)
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # -------------------------------
-# 2) Backend build
+# 3) BACKEND DEPS
 # -------------------------------
-FROM node:20-alpine AS builder
-WORKDIR /app
-
-# Tüm monorepo içeriklerini tekrar kopyala (build için gerekli)
-COPY . .
-
-# Root’taki node_modules’u builder'a kopyala
-COPY --from=deps /app/node_modules ./node_modules
-
-# backend'i build et
+FROM base AS deps-backend
 WORKDIR /app/backend
-RUN npm run build
+COPY backend/package*.json ./
+RUN npm install --legacy-peer-deps
 
 # -------------------------------
-# 3) Production runner
+# 4) COPY BACKEND SOURCE
 # -------------------------------
-FROM node:20-alpine AS runner
+FROM deps-backend AS builder
+WORKDIR /app/backend
+COPY backend ./       
+COPY packages ./packages   
+
+# MULTI-PROJECT TS CONFIG DESTEĞİ
+COPY tsconfig.base.json /app/tsconfig.base.json
+
+# -------------------------------
+# 5) BUILD
+# -------------------------------
+RUN npx tsc -p tsconfig.prod.json
+
+# -------------------------------
+# 6) RUNNER
+# -------------------------------
+FROM node:22-alpine AS runner
 WORKDIR /app/backend
 
 COPY --from=builder /app/backend/dist ./dist
-COPY --from=deps /app/node_modules ./node_modules
-COPY backend/package.json ./package.json
+COPY --from=builder /app/backend/package*.json ./
+COPY --from=deps-backend /app/backend/node_modules ./node_modules
 
 EXPOSE 4000
 CMD ["node", "dist/server.js"]
