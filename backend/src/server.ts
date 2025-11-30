@@ -3,6 +3,9 @@ import http from 'http';
 import app from './app.js';
 import { config } from './config/env.js';
 import { logger } from './config/logger.js';
+import rootRoute from "./routes/root.js";
+  
+app.use("/", rootRoute);
 
 const server = http.createServer(app);
 
