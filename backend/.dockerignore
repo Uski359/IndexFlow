@@ -1,8 +1,6 @@
 node_modules
-dist
-build
-coverage
 npm-debug.log
-.npmrc
+Dockerfile
+.dockerignore
+dist
 .env
-.env.local
