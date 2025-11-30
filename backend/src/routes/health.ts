@@ -2,7 +2,7 @@ import { Router } from "express";
 const router = Router();
 
 router.get("/health", (req, res) => {
-  res.json({ ok: true, status: "running" });
+  return res.json({ ok: true, status: "running" });
 });
 
 export default router;
