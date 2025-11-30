@@ -5,17 +5,17 @@ WORKDIR /app
 # Copy only package files
 COPY package.json package-lock.json ./
 
-# Install deps
-RUN npm install --production
+# Install ALL dependencies (include devDeps)
+RUN npm install
 
 # Copy source
 COPY . .
 
-# Build TypeScript → dist/ üretilecek
+# Build TypeScript
 RUN npm run build
 
-# Expose port
-EXPOSE 4000
+# Delete devDeps to make image smaller (optional)
+RUN npm prune --production
 
-# Start server
+EXPOSE 4000
 CMD ["node", "dist/server.js"]
