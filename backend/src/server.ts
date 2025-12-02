@@ -1,23 +1,27 @@
-import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import healthRoute from "./routes/health.js";
-import transfersRoute from "./routes/transfers.js";
+import http from 'http';
 
-const app = express();
+import app from './app.js';
+import { config } from './config/env.js';
+import { logger } from './config/logger.js';
 
-app.use(express.json());
-app.use(cors());
-app.use(helmet());
-app.use("/api/transfers", transfersRoute);
+const server = http.createServer(app);
 
-app.use(healthRoute);
+server.listen(config.port, () => {
+  logger.info(`API server listening on port ${config.port}`);
+});
 
+function shutdown(signal: string) {
+  logger.info({ signal }, 'Shutting down gracefully');
+  server.close(() => {
+    logger.info('HTTP server closed');
+    process.exit(0);
+  });
 
-import apiRoutes from "./routes/index.js";
-app.use("/api", apiRoutes);
+  setTimeout(() => {
+    logger.error('Forcing shutdown after timeout');
+    process.exit(1);
+  }, 10_000).unref();
+}
 
-import { notFoundHandler } from "./middleware/errorHandler.js";
-app.use(notFoundHandler);
-
-export default app;
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));

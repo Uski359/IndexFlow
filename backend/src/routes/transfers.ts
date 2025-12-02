@@ -1,24 +1,21 @@
 import { Router } from "express";
-import { TransferModel } from "../models/Transfer.js";
+import { TransferRepository } from "../repositories/transferRepository.js";
 
 const router = Router();
 
-router.get("/", async (req, res, next) => {
+router.get("/recent", async (req, res) => {
   try {
-    const limit = Number(req.query.limit) || 50;
-
-    const transfers = await TransferModel.find()
-      .sort({ blockNumber: -1 })
-      .limit(limit)
-      .lean();
+    const repo = new TransferRepository();
+    const list = await repo.getRecent(50);
 
     res.json({
-      ok: true,
-      count: transfers.length,
-      transfers,
+      status: "ok",
+      count: list.length,
+      data: list,
     });
   } catch (err) {
-    next(err);
+    console.error("Error in GET /transfers/recent:", err);
+    res.status(500).json({ error: "internal server error" });
   }
 });
 
