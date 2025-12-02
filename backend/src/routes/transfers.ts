@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { TransferRepository } from "../repositories/transferRepository.js";
+import { transferRepository } from "../repositories/transferRepository.js";
 
 const router = Router();
 
