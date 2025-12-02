@@ -48,6 +48,14 @@ app.get('/health', (_req, res) => {
   });
 });
 
+app.get('/', (_req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'indexflow-backend',
+    docs: ['/health', '/api/transfers', '/api/transfers/recent']
+  });
+});
+
 app.use('/api/transfers', transferRoutes);
 app.use('/transfers', transferRoutes);
 app.use('/api', routes);
