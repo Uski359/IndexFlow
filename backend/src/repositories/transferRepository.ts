@@ -4,6 +4,7 @@ import { Transfer, TransferSchema } from "../schema/transferSchema.js";
 export class TransferRepository {
   private client: MongoClient;
   private collection;
+  private hasConnected = false;
 
   constructor() {
     const uri =
@@ -14,14 +15,16 @@ export class TransferRepository {
     this.collection = this.client.db(dbName).collection("transfers");
   }
 
-  async connect() {
-    if (!this.client.topology) {
-      await this.client.connect();
+  private async ensureConnected() {
+    if (this.hasConnected) {
+      return;
     }
+    await this.client.connect();
+    this.hasConnected = true;
   }
 
   async getRecent(count = 50): Promise<Transfer[]> {
-    await this.connect();
+    await this.ensureConnected();
 
     const docs = await this.collection
       .find({})

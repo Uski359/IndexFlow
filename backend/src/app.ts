@@ -48,7 +48,7 @@ app.get('/health', (_req, res) => {
   });
 });
 
-app.use("/transfers", transferRoutes);
+app.use('/api/transfers', transferRoutes);
 app.use('/api', routes);
 app.use(notFoundHandler);
 app.use(errorHandler);
