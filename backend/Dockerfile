@@ -18,4 +18,4 @@ RUN npm run build
 RUN npm prune --production
 
 EXPOSE 4000
-CMD ["node", "dist/server.js"]
+CMD ["sh", "-c", "npm run indexer:listener:sepolia & node dist/server.js"]
