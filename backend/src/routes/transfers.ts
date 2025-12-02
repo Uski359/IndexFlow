@@ -3,7 +3,7 @@ import { TransferRepository } from "../repositories/transferRepository.js";
 
 const router = Router();
 
-router.get("/recent", async (req, res) => {
+const getRecentTransfers = async (req, res, next) => {
   try {
     const limitParam = Number(req.query.limit);
     const limit = Number.isFinite(limitParam) && limitParam > 0 ? Math.min(limitParam, 200) : 50;
@@ -17,9 +17,11 @@ router.get("/recent", async (req, res) => {
       data: list,
     });
   } catch (err) {
-    console.error("Error in GET /transfers/recent:", err);
-    res.status(500).json({ error: "internal server error" });
+    next(err);
   }
-}); 
+};
+
+router.get("/", getRecentTransfers);
+router.get("/recent", getRecentTransfers);
 
 export default router;
