@@ -15,7 +15,7 @@ export class TransferRepository {
     this.collection = this.client.db(dbName).collection("transfers");
   }
 
-  private async ensureConnected() {
+  async ensureConnected() {
     if (this.hasConnected) {
       return;
     }
@@ -35,3 +35,5 @@ export class TransferRepository {
     return docs.map((d) => TransferSchema.parse(d));
   }
 }
+
+export const transferRepository = new TransferRepository();

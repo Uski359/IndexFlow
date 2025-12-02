@@ -8,8 +8,7 @@ const getRecentTransfers = async (req, res, next) => {
     const limitParam = Number(req.query.limit);
     const limit = Number.isFinite(limitParam) && limitParam > 0 ? Math.min(limitParam, 200) : 50;
 
-    const repo = new TransferRepository();
-    const list = await repo.getRecent(limit);
+    const list = await transferRepository.getRecent(limit);
 
     res.json({
       status: "ok",
