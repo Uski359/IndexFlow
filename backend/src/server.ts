@@ -4,6 +4,7 @@ import app from './app.js';
 import { config } from './config/env.js';
 import { logger } from './config/logger.js';
 import { transferRepository } from './repositories/transferRepository.js';
+import './indexer/listener/sepolia.listener.js';
 
 async function startServer() {
   try {
