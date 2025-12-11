@@ -11,6 +11,7 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import { defaultRateLimiter } from './middleware/rateLimiter.js';
 import routes from './routes/index.js';
 import transferRoutes from './routes/transfers.js';
+import faucetRoute from './routes/faucet.js';
 
 const app = express();
 
@@ -58,6 +59,8 @@ app.get('/', (_req, res) => {
 
 app.use('/api/transfers', transferRoutes);
 app.use('/transfers', transferRoutes);
+app.use('/api/faucet', faucetRoute);
+app.use('/faucet', faucetRoute);
 app.use('/api', routes);
 app.use(notFoundHandler);
 app.use(errorHandler);
