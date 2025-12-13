@@ -1,9 +1,6 @@
-"use client";
-
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import type { ReactNode } from 'react';
-import { Toaster } from 'react-hot-toast';
 
 import { AppProviders } from '@/providers/app-providers';
 import Layout from '@/components/Layout';
@@ -26,7 +23,6 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           <ChainProvider>
             <Layout>{children}</Layout>
           </ChainProvider>
-          <Toaster position="bottom-right" />
         </AppProviders>
       </body>
     </html>
