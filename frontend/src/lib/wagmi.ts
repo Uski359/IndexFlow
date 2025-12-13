@@ -3,27 +3,32 @@
 import { configureChains, createConfig } from "wagmi";
 import { sepolia } from "wagmi/chains";
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
-import { InjectedConnector } from "wagmi/connectors/injected";
+import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { publicProvider } from "wagmi/providers/public";
 import { env } from "@/lib/env";
 
 const projectId = env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "indexflow-demo";
 
 const resolvedRpcUrl = env.NEXT_PUBLIC_RPC_URL ?? sepolia.rpcUrls.default.http[0];
 
-const { chains, publicClient, webSocketPublicClient } = configureChains([sepolia], [
-  jsonRpcProvider({
-    rpc: () => ({ http: resolvedRpcUrl })
-  })
-]);
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [sepolia],
+  [
+    jsonRpcProvider({
+      rpc: () => ({ http: resolvedRpcUrl })
+    }),
+    publicProvider()
+  ]
+);
 
 export { chains };
 
 export const wagmiConfig = createConfig({
   autoConnect: true,
   connectors: [
-    new InjectedConnector({
+    new MetaMaskConnector({
       chains,
       options: { shimDisconnect: true }
     }),
