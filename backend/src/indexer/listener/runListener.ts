@@ -353,6 +353,11 @@ export const runListener = async (chainId: string): Promise<void> => {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const latestBlock = await provider.getBlockNumber();
+    try {
+      await persistLastProcessedBlock(chain.id, lastProcessedBlock, latestBlock);
+    } catch (error) {
+      logger.error('Failed to refresh indexer state', { chainId: chain.id, err: error });
+    }
 
     if (lastProcessedBlock >= latestBlock) {
       await sleep(POLL_INTERVAL_MS);
@@ -372,7 +377,7 @@ export const runListener = async (chainId: string): Promise<void> => {
         lastProcessedBlock = blockNumber;
       }
 
-      await persistLastProcessedBlock(chain.id, lastProcessedBlock);
+      await persistLastProcessedBlock(chain.id, lastProcessedBlock, latestBlock);
     } catch (error) {
       logger.error('Listener batch failed', {
         chainId: chain.id,

@@ -237,7 +237,13 @@ class TransferRepository {
   }
 }
 
-type StateDoc = { _id: string; chainId: string; lastProcessedBlock: number; updatedAt: Date };
+type StateDoc = {
+  _id: string;
+  chainId: string;
+  lastProcessedBlock: number;
+  updatedAt: Date;
+  currentChainBlock?: number;
+};
 
 class IndexStateRepository {
   private client: MongoClient;
@@ -270,11 +276,30 @@ class IndexStateRepository {
     return doc?.lastProcessedBlock ?? null;
   }
 
-  async setLastProcessedBlock(chainId: string, block: number): Promise<void> {
+  async setLastProcessedBlock(
+    chainId: string,
+    block: number,
+    currentChainBlock?: number
+  ): Promise<void> {
     const collection = await this.getCollection();
+    const stateUpdate: {
+      chainId: string;
+      lastProcessedBlock: number;
+      updatedAt: Date;
+      currentChainBlock?: number;
+    } = {
+      chainId,
+      lastProcessedBlock: block,
+      updatedAt: new Date()
+    };
+
+    if (currentChainBlock !== undefined) {
+      stateUpdate.currentChainBlock = currentChainBlock;
+    }
+
     await collection.updateOne(
       { chainId },
-      { $set: { chainId, lastProcessedBlock: block, updatedAt: new Date() } },
+      { $set: stateUpdate },
       { upsert: true }
     );
   }
@@ -337,7 +362,7 @@ export const startListener = async (): Promise<void> => {
       p.getBlockNumber()
     );
     lastProcessedBlock = Number(current) - 1;
-    await stateRepo.setLastProcessedBlock(chainId!, lastProcessedBlock);
+    await stateRepo.setLastProcessedBlock(chainId!, lastProcessedBlock, Number(current));
   }
 
   logger.info(
@@ -356,6 +381,7 @@ export const startListener = async (): Promise<void> => {
       const currentBlock = Number(
         await multiProvider.callWithRetry('getBlockNumber', (provider) => provider.getBlockNumber())
       );
+      await stateRepo.setLastProcessedBlock(chainId!, lastProcessedBlock, currentBlock);
 
       if (currentBlock <= lastProcessedBlock) {
         await sleep(POLL_INTERVAL_MS);
@@ -434,7 +460,7 @@ export const startListener = async (): Promise<void> => {
       }
 
       lastProcessedBlock = toBlock;
-      await stateRepo.setLastProcessedBlock(chainId!, lastProcessedBlock);
+      await stateRepo.setLastProcessedBlock(chainId!, lastProcessedBlock, currentBlock);
     } catch (error) {
       logger.error({ err: error }, 'Indexer loop error');
     }

@@ -7,6 +7,7 @@ export interface IndexerStateDocument
     Document & {
       chainId: string;
       lastProcessedBlock: number;
+      currentChainBlock?: number;
       updatedAt: Date;
     }
   > {}
@@ -33,12 +34,28 @@ export const loadLastProcessedBlock = async (chainId: string): Promise<number | 
 
 export const persistLastProcessedBlock = async (
   chainId: string,
-  blockNumber: number
+  blockNumber: number,
+  currentChainBlock?: number
 ): Promise<void> => {
   const collection = await getStateCollection();
+  const stateUpdate: {
+    chainId: string;
+    lastProcessedBlock: number;
+    updatedAt: Date;
+    currentChainBlock?: number;
+  } = {
+    chainId: `${chainId}`,
+    lastProcessedBlock: blockNumber,
+    updatedAt: new Date()
+  };
+
+  if (currentChainBlock !== undefined) {
+    stateUpdate.currentChainBlock = currentChainBlock;
+  }
+
   await collection.updateOne(
     { chainId: `${chainId}` },
-    { $set: { chainId: `${chainId}`, lastProcessedBlock: blockNumber, updatedAt: new Date() } },
+    { $set: stateUpdate },
     { upsert: true }
   );
 };
