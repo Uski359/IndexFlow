@@ -7,6 +7,7 @@ import {
   ActivitySquare,
   HeartPulse,
   LayoutDashboard,
+  ShieldCheck,
   Wallet
 } from 'lucide-react';
 import classNames from 'classnames';
@@ -14,7 +15,8 @@ import classNames from 'classnames';
 const navItems: { href: Route; label: string; icon: typeof LayoutDashboard }[] = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/transfers', label: 'Transfers', icon: ActivitySquare },
-  { href: '/health', label: 'Health', icon: HeartPulse }
+  { href: '/health', label: 'Health', icon: HeartPulse },
+  { href: '/proof-of-usage', label: 'Proof of Usage', icon: ShieldCheck }
 ];
 
 const Sidebar = () => {
