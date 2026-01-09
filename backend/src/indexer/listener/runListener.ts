@@ -24,6 +24,7 @@ import {
 } from '../parsers/contributions.js';
 import { getProvider, obfuscateRpcUrl, type RateLimitedProvider } from '../services/provider.js';
 import { withRetry } from '../utils/retry.js';
+import { loadLastProcessedBlock, persistLastProcessedBlock } from '../db/state.js';
 
 type ContractTarget = { address: string; deployBlock: number };
 
@@ -88,6 +89,10 @@ const fetchLogs = async (
     return [] as Log[];
   });
 
+const POLL_INTERVAL_MS = Math.max(1_000, Number(process.env.INDEXER_POLL_INTERVAL_MS ?? '5000'));
+const LISTENER_BATCH_SIZE = Math.max(1, Number(process.env.INDEXER_BATCH_SIZE ?? '25'));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const runListener = async (chainId: string): Promise<void> => {
   const chain = requireChainReady(chainId);
   const provider = getProvider(chainId);
@@ -104,16 +109,45 @@ export const runListener = async (chainId: string): Promise<void> => {
   const poiCollection = await getPoiEventsCollection();
   const contributionsCollection = await getContributionsCollection();
 
+  const resolveStartingBlock = async (): Promise<number> => {
+    const persisted = await loadLastProcessedBlock(chain.id);
+    if (persisted !== null) {
+      return persisted;
+    }
+
+    const configuredStartRaw = process.env.START_BLOCK;
+    if (configuredStartRaw !== undefined) {
+      const configuredStart = Number(configuredStartRaw);
+      if (Number.isFinite(configuredStart) && configuredStart > 0) {
+        return Math.max(0, configuredStart - 1);
+      }
+      const latest = await provider.getBlockNumber();
+      return Math.max(0, Number(latest) - 1);
+    }
+
+    if (chain.deployBlock !== null) {
+      return Math.max(0, chain.deployBlock - 1);
+    }
+
+    const latest = await provider.getBlockNumber();
+    return Math.max(0, Number(latest) - 1);
+  };
+
+  let lastProcessedBlock = await resolveStartingBlock();
+
   logger.info('Starting listener', {
     chainId: chain.id,
     network: chain.network,
     rpc: obfuscateRpcUrl(provider.rpcUrl),
     staking: stakingTarget?.address,
     poi: poiTarget?.address,
-    contributions: contributionTarget?.address
+    contributions: contributionTarget?.address,
+    startBlock: lastProcessedBlock + 1,
+    batchSize: LISTENER_BATCH_SIZE,
+    pollIntervalMs: POLL_INTERVAL_MS
   });
 
-  provider.provider.on('block', async (blockNumber: number) => {
+  const processBlock = async (blockNumber: number): Promise<void> => {
     const block = await withRetry(
       () => provider.provider.getBlock(blockNumber),
       { taskName: `${chain.id}:getBlock:${blockNumber}`, logger }
@@ -310,9 +344,49 @@ export const runListener = async (chainId: string): Promise<void> => {
       poi: poiCount,
       contributions: contributionCount
     });
-  });
+  };
 
   provider.provider.on('error', (error) => {
     logger.error('Provider emitted an error', { chainId: chain.id, err: error });
   });
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const latestBlock = await provider.getBlockNumber();
+    try {
+      await persistLastProcessedBlock(chain.id, lastProcessedBlock, latestBlock);
+    } catch (error) {
+      logger.error('Failed to refresh indexer state', { chainId: chain.id, err: error });
+    }
+
+    if (lastProcessedBlock >= latestBlock) {
+      await sleep(POLL_INTERVAL_MS);
+      continue;
+    }
+
+    const targetBlock = Math.min(latestBlock, lastProcessedBlock + LISTENER_BATCH_SIZE);
+
+    try {
+      for (
+        let blockNumber = lastProcessedBlock + 1;
+        blockNumber <= targetBlock;
+        blockNumber += 1
+      ) {
+        // eslint-disable-next-line no-await-in-loop
+        await processBlock(blockNumber);
+        lastProcessedBlock = blockNumber;
+      }
+
+      await persistLastProcessedBlock(chain.id, lastProcessedBlock, latestBlock);
+    } catch (error) {
+      logger.error('Listener batch failed', {
+        chainId: chain.id,
+        err: error,
+        fromBlock: lastProcessedBlock + 1,
+        toBlock: targetBlock
+      });
+    }
+
+    await sleep(POLL_INTERVAL_MS);
+  }
 };

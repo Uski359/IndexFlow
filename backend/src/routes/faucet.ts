@@ -57,11 +57,10 @@ router.post("/", async (req, res) => {
     ipCooldown.set(ip, now);
 
     return res.json({ success: true, hash: tx.hash });
-  } catch (err: any) {
-    console.error(err);
-    return res
-      .status(500)
-      .json({ error: "Faucet failed", details: err?.message });
+  } catch (error: unknown) {
+    console.error(error);
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return res.status(500).json({ error: "Faucet failed", details: message });
   }
 });
 

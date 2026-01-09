@@ -5,7 +5,8 @@ export const defaultRateLimiter = rateLimit({
   limit: 200,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
-  message: 'Too many requests from this IP, please try again later.'
+  message: 'Too many requests from this IP, please try again later.',
+  skip: (req) => req.path.startsWith('/api/proof-of-usage')
 });
 
 export const validatorRateLimiter = rateLimit({

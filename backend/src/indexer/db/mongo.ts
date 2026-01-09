@@ -32,7 +32,8 @@ export const connectDB = async (): Promise<Db> => {
 
 export type TransferDocument = WithId<
   Document & {
-    chain: string;
+    chain?: string;
+    chainId?: string;
     blockNumber: number;
     block?: number;
     txHash: string;
@@ -44,9 +45,25 @@ export type TransferDocument = WithId<
   }
 >;
 
+let transfersCollectionPromise: Promise<Collection<TransferDocument>> | null = null;
+
 export const getTransfersCollection = async (): Promise<Collection<TransferDocument>> => {
-  const db = await connectDB();
-  return db.collection<TransferDocument>('transfers');
+  if (!transfersCollectionPromise) {
+    transfersCollectionPromise = connectDB().then(async (db) => {
+      const collection = db.collection<TransferDocument>('transfers');
+      await collection.createIndex(
+        { chainId: 1, txHash: 1, logIndex: 1 },
+        {
+          name: 'transfer_chainId_tx_log_unique',
+          unique: true,
+          partialFilterExpression: { chainId: { $exists: true }, logIndex: { $exists: true } }
+        }
+      );
+      return collection;
+    });
+  }
+
+  return transfersCollectionPromise;
 };
 
 export type StakingEventDocument = WithId<

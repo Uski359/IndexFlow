@@ -1,4 +1,4 @@
-import type { Filter } from 'mongodb';
+import { MongoServerError, type Filter } from 'mongodb';
 
 import { logger } from '../logger.js';
 import { withRetry } from '../utils/retry.js';
@@ -6,6 +6,7 @@ import { getTransfersCollection, type TransferDocument } from './mongo.js';
 
 export interface TransferInput {
   chain: string;
+  chainId?: string;
   blockNumber: number;
   txHash: string;
   logIndex: number;
@@ -25,35 +26,57 @@ const normalizeTimestamp = (timestamp?: number | null): number => {
   return Math.round(isSeconds ? numeric * 1000 : numeric);
 };
 
+const isDuplicateKeyError = (error: unknown): boolean =>
+  error instanceof MongoServerError && error.code === 11000;
+
 export const saveTransfer = async (transfer: TransferInput): Promise<void> => {
   const transfers = await getTransfersCollection();
+  const chainId = transfer.chainId ?? transfer.chain;
   const filter: Filter<TransferDocument> = {
-    chain: transfer.chain,
     txHash: transfer.txHash,
-    logIndex: transfer.logIndex
+    $or: [
+      { chain: chainId, logIndex: transfer.logIndex },
+      { chainId, logIndex: transfer.logIndex },
+      { chain: chainId, logIndex: { $exists: false } },
+      { chainId, logIndex: { $exists: false } }
+    ]
   };
 
   const normalizedTimestamp = normalizeTimestamp(transfer.timestamp);
 
   await withRetry(
-    () =>
-      transfers.updateOne(
-        filter,
-        {
-          $set: {
-            chain: transfer.chain,
-            blockNumber: transfer.blockNumber,
-            block: transfer.blockNumber,
+    async () => {
+      try {
+        await transfers.updateOne(
+          filter,
+          {
+            $set: {
+              chain: chainId,
+              chainId,
+              blockNumber: transfer.blockNumber,
+              block: transfer.blockNumber,
+              txHash: transfer.txHash,
+              logIndex: transfer.logIndex,
+              from: transfer.from,
+              to: transfer.to,
+              value: transfer.value,
+              timestamp: normalizedTimestamp
+            }
+          },
+          { upsert: true }
+        );
+      } catch (error) {
+        if (isDuplicateKeyError(error)) {
+          logger.debug('Duplicate transfer ignored', {
+            chainId,
             txHash: transfer.txHash,
-            logIndex: transfer.logIndex,
-            from: transfer.from,
-            to: transfer.to,
-            value: transfer.value,
-            timestamp: normalizedTimestamp
-          }
-        },
-        { upsert: true }
-      ),
+            logIndex: transfer.logIndex
+          });
+          return;
+        }
+        throw error;
+      }
+    },
     {
       taskName: `mongo:transfers:${transfer.chain}:${transfer.txHash}:${transfer.logIndex}`,
       logger,

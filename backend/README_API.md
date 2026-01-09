@@ -40,6 +40,10 @@ Express + TypeScript + ESM API layer that surfaces indexed token data from Mongo
 }
 ```
 
+## Manual verification
+- `curl http://localhost:4000/api/stats` to inspect per-chain stats and indexing lag.
+- `curl http://localhost:4000/api/health` to confirm the latest indexed block versus the chain head.
+
 ## Required environment
 - `PORT` (API port, default 4000)
 - `MONGO_URL`, `MONGO_DB` (shared with the indexer)
