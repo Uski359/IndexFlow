@@ -123,7 +123,7 @@ yaml
 
 ---
 
-```md
+```md ```
 ## 🌐 Multi-Chain Readiness
 
 IndexFlow is architected for seamless expansion beyond a single network.
@@ -134,6 +134,7 @@ IndexFlow is architected for seamless expansion beyond a single network.
 
 No major refactor is required to onboard additional networks.
 md
+```
 ```
 ## 🎯 Design Philosophy
 
