@@ -6,6 +6,7 @@ Rather than optimizing for dashboards or surface-level analytics, IndexFlow prio
 
 IndexFlow separates proof from interpretation, enabling both machine-verifiable guarantees and human-readable insights without compromising determinism.
 
+
 ✨ Core Capabilities
 Deterministic Verification
 
@@ -59,6 +60,8 @@ Wallet-level drilldowns with proof hash + commentary
 
 Explicit data-source labeling (run / insights / commentary)
 
+
+
 🧠 How It Works (High Level)
 
 Reads last confirmed indexer state from persistent storage
@@ -77,6 +80,8 @@ Evaluates usage deterministically and derives insights
 
 This guarantees safe recovery after crashes or restarts without manual intervention.
 
+
+
 ✅ Correctness Guarantees
 
 IndexFlow provides strong guarantees by design:
@@ -92,6 +97,8 @@ Recent blocks are safely re-indexed without corrupting historical data.
 
 Deterministic replays
 The same inputs always produce the same outputs and proof hashes.
+
+
 
 📊 Monitoring & Visibility
 
@@ -112,6 +119,8 @@ Example response:
   "updatedAt": "2025-01-01T12:00:00.000Z"
 }
 
+
+
 🗂️ Historical Backfills
 
 IndexFlow supports manual, resumable backfills using the same deterministic ingestion logic as live indexing:
@@ -127,6 +136,8 @@ Resume correctly
 
 Do not duplicate data
 
+
+
 🌐 Multi-Chain Readiness
 
 IndexFlow is architected for multi-chain expansion:
@@ -138,6 +149,8 @@ Unified API surface across networks
 Designed for EVM chains (Ethereum, Polygon, Base, zkEVM, etc.)
 
 No major refactor is required to add new networks.
+
+
 
 🎯 Design Philosophy
 
@@ -161,6 +174,8 @@ DeFi tooling
 
 Ecosystem-level data services
 
+
+
 🧪 Current Status
 
 Live testnet deployment
@@ -172,6 +187,8 @@ Deterministic insights and cached AI commentary
 Demo-ready for events and investors
 
 Built and maintained by a solo founder with strong execution velocity
+
+
 
 📌 One-Line Summary
 
