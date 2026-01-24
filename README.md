@@ -1,69 +1,105 @@
 IndexFlow
 
-IndexFlow is a production-grade, reliability-first EVM indexing backend designed to survive real-world conditions such as restarts, retries, short chain reorganizations, and RPC failures.
+IndexFlow is a production-grade, reliability-first on-chain data infrastructure designed to deliver deterministic usage verification under real-world conditions.
 
-Rather than focusing on dashboards or surface features, IndexFlow prioritizes correctness, durability, and infrastructure maturity from day one.
+Rather than optimizing for dashboards or surface-level analytics, IndexFlow prioritizes correctness, durability, and replayability from day one — ensuring that usage data remains verifiable across restarts, retries, short chain reorganizations, and RPC failures.
 
-✨ Key Features
+IndexFlow separates proof from interpretation, enabling both machine-verifiable guarantees and human-readable insights without compromising determinism.
+
+✨ Core Capabilities
+Deterministic Verification
+
+Canonical, reproducible usage evaluation per wallet and time window
+
+Proof hashes derived from normalized inputs (wallet, window, criteria)
+
+Cache-first execution keyed by proof hash
+
+Reliability-First Indexing
 
 Restart-safe indexing with persistent checkpoints
 
-Idempotent event ingestion using (chainId, txHash, logIndex)
+Idempotent ingestion using (chainId, txHash, logIndex)
 
-Reorg-tolerant architecture (seed-level sliding window)
+Reorg-tolerant architecture with sliding safety windows
 
 Batch-based indexing with safe resumption
 
-Manual, resumable backfill for historical data
+Manual, resumable historical backfills
 
-Real-time indexer visibility (health, lag, progress)
+Insights & Interpretation (Non-Proof)
 
-Chain-aware schemas ready for multi-chain expansion
+Deterministic Insights layer:
 
-Clean, read-only REST API for downstream consumers
+Activity score (0–100)
+
+Farming probability (%)
+
+Behavioral tagging (organic / suspected_farm / inactive / mixed)
+
+Optional AI commentary layer:
+
+Cached by proof hash
+
+Clearly separated from verification
+
+Never affects proof integrity
+
+Demo-Ready Interfaces
+
+Read-only REST APIs for campaigns and wallets
+
+Live demo dashboard with:
+
+Score & risk visualization
+
+Quality and farming presets
+
+Wallet-level drilldowns with proof hash + commentary
+
+Explicit data-source labeling (run / insights / commentary)
 
 🧠 How It Works (High Level)
 
-Reads last processed block from persistent indexer state
+Reads last confirmed indexer state from persistent storage
 
 Fetches logs in deterministic block batches
 
-Normalizes ERC-20 transfer events
+Normalizes on-chain events (ERC-20 transfers, usage signals)
 
 Writes events idempotently to the database
 
 Persists progress after each batch
 
-Continuously monitors indexing lag and health
+Replays recent blocks safely to tolerate short reorgs
+
+Evaluates usage deterministically and derives insights
 
 This guarantees safe recovery after crashes or restarts without manual intervention.
 
 ✅ Correctness Guarantees
 
-IndexFlow provides the following guarantees:
+IndexFlow provides strong guarantees by design:
 
 No duplicate events
-Each transfer is uniquely identified by:
-
-(chainId, txHash, logIndex)
-
+Every event is uniquely identified by (chainId, txHash, logIndex).
 
 Safe restarts
 Indexing always resumes from the last confirmed block.
 
-Short reorg tolerance
+Reorg tolerance
 Recent blocks are safely re-indexed without corrupting historical data.
+
+Deterministic replays
+The same inputs always produce the same outputs and proof hashes.
 
 📊 Monitoring & Visibility
 
-IndexFlow exposes lightweight endpoints for live inspection:
+IndexFlow exposes lightweight inspection endpoints for demos, grants, and operations:
 
-Health
 GET /health
 
-Stats
 GET /api/stats
-
 
 Example response:
 
@@ -76,12 +112,9 @@ Example response:
   "updatedAt": "2025-01-01T12:00:00.000Z"
 }
 
+🗂️ Historical Backfills
 
-These endpoints are designed for demos, grants, and operational monitoring.
-
-🗂️ Backfilling Historical Data
-
-IndexFlow supports manual, resumable backfills using the same ingestion logic as live indexing:
+IndexFlow supports manual, resumable backfills using the same deterministic ingestion logic as live indexing:
 
 npm run indexer:backfill -- --chain sepolia --from 9800000 --to latest
 
@@ -90,21 +123,21 @@ Backfills:
 
 Are safe to interrupt
 
-Update indexer state correctly
+Resume correctly
 
 Do not duplicate data
 
 🌐 Multi-Chain Readiness
 
-IndexFlow is architected to scale beyond a single chain:
+IndexFlow is architected for multi-chain expansion:
 
-Chain-aware schemas and state
+Chain-aware schemas and indexer state
 
 Unified API surface across networks
 
-Designed to support Polygon PoS, zkEVM, Base, and other EVM chains
+Designed for EVM chains (Ethereum, Polygon, Base, zkEVM, etc.)
 
-No major refactor is required to add additional networks.
+No major refactor is required to add new networks.
 
 🎯 Design Philosophy
 
@@ -116,7 +149,17 @@ Reliability over speed
 
 Infrastructure maturity over UI polish
 
-This makes it suitable as a foundation for analytics platforms, explorers, DeFi tooling, and ecosystem-level data services.
+Proof first, interpretation second
+
+This makes it suitable as a foundation for:
+
+Analytics platforms
+
+Airdrop and campaign verification
+
+DeFi tooling
+
+Ecosystem-level data services
 
 🧪 Current Status
 
@@ -124,10 +167,12 @@ Live testnet deployment
 
 Active indexing with real data
 
-Seed-level production readiness
+Deterministic insights and cached AI commentary
+
+Demo-ready for events and investors
 
 Built and maintained by a solo founder with strong execution velocity
 
 📌 One-Line Summary
 
-IndexFlow is a production-safe EVM indexer designed to survive restarts, reorgs, and real-world failures from day one.
+IndexFlow is a production-safe, deterministic on-chain usage verification system that separates cryptographic proof from human interpretation — built to survive restarts, reorgs, and real-world failures from day one.
