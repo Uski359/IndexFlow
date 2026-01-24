@@ -102,6 +102,7 @@ Example response:
   "totalTransfers": 1234,
   "updatedAt": "2025-01-01T12:00:00.000Z"
 }
+```
 🗂️ Historical Backfills
 IndexFlow supports manual, resumable backfills using the same deterministic ingestion logic as live indexing:
 
