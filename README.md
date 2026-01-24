@@ -103,67 +103,71 @@ Example response:
   "updatedAt": "2025-01-01T12:00:00.000Z"
 }
 ```
-🗂️ Historical Backfills
-IndexFlow supports manual, resumable backfills using the same deterministic ingestion logic as live indexing:
 
-bash
-Kodu kopyala
+## 🗂️ Historical Backfills
+
+IndexFlow supports **manual, resumable historical backfills** using the exact same deterministic ingestion logic as live indexing.
+
+```bash
 npm run indexer:backfill -- --chain sepolia --from 9800000 --to latest
-Backfills:
+Backfills are designed to be:
 
-Are safe to interrupt
+Safe to interrupt
 
-Resume correctly
+Fully resumable
 
-Do not duplicate data
+Free of duplicate data
 
-🌐 Multi-Chain Readiness
-IndexFlow is architected for multi-chain expansion:
+yaml
+```
 
-Chain-aware schemas and indexer state
+---
 
-Unified API surface across networks
+```md
+## 🌐 Multi-Chain Readiness
 
-Designed for EVM chains (Ethereum, Polygon, Base, zkEVM, etc.)
+IndexFlow is architected for seamless expansion beyond a single network.
 
-No major refactor is required to add new networks.
+- Chain-aware schemas and indexer state
+- Unified API surface across networks
+- Native support for EVM-based chains (Ethereum, Polygon, Base, zkEVM, and others)
 
-🎯 Design Philosophy
-IndexFlow intentionally prioritizes:
+No major refactor is required to onboard additional networks.
+md
+```
+## 🎯 Design Philosophy
 
-Correctness over features
+IndexFlow is built around a small set of non-negotiable principles:
 
-Reliability over speed
+- **Correctness over features**
+- **Reliability over speed**
+- **Infrastructure maturity over UI polish**
+- **Proof first, interpretation second**
 
-Infrastructure maturity over UI polish
+This makes IndexFlow suitable as a foundation for:
 
-Proof first, interpretation second
+- Analytics platforms
+- Airdrop and campaign verification
+- DeFi tooling
+- Ecosystem-level data services
+md
 
-This makes it suitable as a foundation for:
+## 🧪 Current Status
 
-Analytics platforms
+- Live testnet deployment
+- Active indexing with real usage data
+- Deterministic insights with cached AI commentary
+- Demo-ready for events and investor presentations
 
-Airdrop and campaign verification
+Built and maintained by a solo founder with strong execution velocity.
+md
 
-DeFi tooling
+## 📌 One-Line Summary
 
-Ecosystem-level data services
+**IndexFlow is a production-safe, deterministic on-chain usage verification system that cleanly separates cryptographic proof from human interpretation — built to survive restarts, reorgs, and real-world failures from day one.**
+md
 
-🧪 Current Status
-Live testnet deployment
+## 🔗 Repositories
 
-Active indexing with real data
-
-Deterministic insights and cached AI commentary
-
-Demo-ready for events and investors
-
-Built and maintained by a solo founder with strong execution velocity
-
-📌 One-Line Summary
-IndexFlow is a production-safe, deterministic on-chain usage verification system that cleanly separates cryptographic proof from human interpretation — built to survive restarts, reorgs, and real-world failures from day one.
-
-Repositories
-Backend: https://github.com/Uski359/indexflow-backend
-
-Frontend (Demo): https://github.com/Uski359/indexflow-frontend
+- **Backend:** https://github.com/Uski359/indexflow-backend
+- **Frontend (Demo):** https://github.com/Uski359/indexflow-frontend
