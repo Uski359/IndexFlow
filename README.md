@@ -134,8 +134,7 @@ IndexFlow is architected for seamless expansion beyond a single network.
 
 No major refactor is required to onboard additional networks.
 md
-```
-```
+
 ## 🎯 Design Philosophy
 
 IndexFlow is built around a small set of non-negotiable principles:
