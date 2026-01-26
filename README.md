@@ -171,3 +171,15 @@ md
 
 - **Backend:** https://github.com/Uski359/indexflow-backend
 - **Frontend (Demo):** https://github.com/Uski359/indexflow-frontend
+
+## 🔗 Demo Links
+
+- Campaign Demo: https://www.indexflow.network/demo
+- Proof of Usage (Multi-wallet): https://www.indexflow.network/demo/proof
+
+## ⚡ Demo Flow (30 seconds)
+
+1. Open the Proof of Usage page
+2. Paste sample wallets and run verification
+3. Inspect deterministic proof hash and criteria
+4. (Optional) Export or share results
