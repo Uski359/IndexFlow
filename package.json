@@ -4,8 +4,10 @@
     "private": true,
     "description": "IndexFlow monorepo for decentralized data indexing and search protocol",
     "workspaces": [
-        "backend",
-        "packages/*"
+        "indexflow-frontend",
+        "indexflow-backend",
+        "index-node",
+        "contracts"
     ],
     "engines": {
         "node": ">=20"
@@ -13,18 +15,18 @@
     "scripts": {
         "prepare": "husky install",
         "format": "prettier --write .",
-        "lint": "npm run lint --workspace contracts && npm run lint --workspace index-node && npm run lint --workspace frontend && npm run lint --workspace backend",
-        "typecheck": "npm run typecheck --workspace contracts && npm run typecheck --workspace index-node && npm run typecheck --workspace frontend && npm run typecheck --workspace backend",
-        "test": "npm run test --workspace contracts && npm run test --workspace index-node && npm run test --workspace frontend && npm run test --workspace backend",
+        "lint": "npm run lint --workspace contracts && npm run lint --workspace index-node && npm run lint --workspace indexflow-frontend && npm run lint --workspace indexflow-backend",
+        "typecheck": "npm run typecheck --workspace contracts && npm run typecheck --workspace index-node && npm run typecheck --workspace indexflow-frontend && npm run typecheck --workspace indexflow-backend",
+        "test": "npm run test --workspace contracts && npm run test --workspace index-node && npm run test --workspace indexflow-frontend && npm run test --workspace indexflow-backend",
         "dev:index-node": "npm --workspace index-node run dev",
-        "dev:frontend": "npm --workspace frontend run dev",
+        "dev:frontend": "npm --workspace indexflow-frontend run dev",
         "dev:contracts": "npm --workspace contracts run dev",
-        "dev:backend": "npm --workspace backend run dev",
+        "dev:backend": "pnpm --dir indexflow-backend run dev",
         "build:index-node": "npm --workspace index-node run build",
-        "build:frontend": "npm --workspace frontend run build",
+        "build:frontend": "npm --workspace indexflow-frontend run build",
         "build:contracts": "npm --workspace contracts run build",
-        "build:backend": "npm --workspace backend run build",
-        "indexer:listener:all": "npm --workspace backend run indexer:listener:all",
+        "build:backend": "npm --workspace indexflow-backend run build",
+        "indexer:listener:all": "npm --workspace indexflow-backend run indexer:listener:all",
         "sync:contracts": "node scripts/sync-contracts.mjs",
         "stack:start": "powershell -ExecutionPolicy Bypass -File ./scripts/start-all.ps1",
         "demo": "docker compose up --build",
@@ -43,7 +45,7 @@
         "husky": "^9.1.7",
         "lint-staged": "^16.2.4",
         "prettier": "^3.2.5",
-        "typescript": "^5.4.0"
+        "typescript": "^5.8.3"
     },
     "dependencies": {
         "@vercel/analytics": "^1.5.0",

@@ -1,3 +1,5 @@
 packages:
-  - backend
-  - packages/*
+  - 'indexflow-frontend'
+  - 'indexflow-backend'
+  - 'index-node'
+  - 'contracts'
