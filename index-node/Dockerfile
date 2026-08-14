@@ -3,6 +3,9 @@ WORKDIR /app
 
 RUN corepack enable
 
+# This Dockerfile should be built from the repository root with:
+# docker build -f index-node/Dockerfile -t index-node .
+
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY packages ./packages
 COPY index-node ./index-node
