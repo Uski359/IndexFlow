@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\Users\\umutc\\OneDrive\\Belgeler\\IndexFlow\\indexflow-backend\\logs\\.04db6e73aefb8d4200ff68a3e651a0a0bd199f37-audit.json",
+    "files": [
+        {
+            "date": 1790075129399,
+            "name": "C:\\Users\\umutc\\OneDrive\\Belgeler\\IndexFlow\\indexflow-backend\\logs\\indexer-2026-09-22.log",
+            "hash": "96b8075313e9c961d92665309a96dddb3282a6d57312e4b9264434b3b0f0cc70"
+        }
+    ],
+    "hashType": "sha256"
+}

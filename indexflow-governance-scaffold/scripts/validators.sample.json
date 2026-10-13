@@ -1,0 +1,5 @@
+[
+  { "id": "validator-01", "stake": 15000, "uptime": 0.99 },
+  { "id": "validator-02", "stake": 11000, "uptime": 0.97 },
+  { "id": "validator-03", "stake": 9000, "uptime": 0.95 }
+]

@@ -1,0 +1,88 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: indexflow_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-indexflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-indexflow}
+      POSTGRES_DB: ${POSTGRES_DB:-indexflow}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+    container_name: indexflow_elastic
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elastic_data:/usr/share/elasticsearch/data
+    ports:
+      - "${ELASTIC_PORT:-9200}:9200"
+
+  validator:
+    build:
+      context: ../microservices/data_validator
+      dockerfile: Dockerfile
+    container_name: indexflow_validator
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+      - VALIDATOR_API_KEY=${VALIDATOR_API_KEY:-dev-secret}
+      - PROOF_DB_PATH=/data/proof_jobs.db
+    ports:
+      - "${VALIDATOR_PORT:-7000}:7000"
+    volumes:
+      - validator_data:/data
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: indexflow_backend
+    restart: unless-stopped
+    env_file:
+      - ../backend/.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-indexflow}:${POSTGRES_PASSWORD:-indexflow}@postgres:5432/${POSTGRES_DB:-indexflow}
+      ELASTIC_NODE: http://elastic:9200
+      DATA_VALIDATOR_URL: http://validator:7000
+      DATA_VALIDATOR_API_KEY: ${VALIDATOR_API_KEY:-dev-secret}
+      NODE_ENV: production
+    depends_on:
+      - postgres
+      - elastic
+      - validator
+    ports:
+      - "${BACKEND_PORT:-4000}:4000"
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: indexflow_frontend
+    restart: unless-stopped
+    env_file:
+      - ../frontend/.env.local
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://backend:4000/api
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+
+volumes:
+  postgres_data:
+  elastic_data:
+  validator_data:

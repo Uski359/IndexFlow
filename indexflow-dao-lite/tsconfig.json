@@ -1,0 +1,14 @@
+﻿{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "types": ["node", "hardhat"]
+  },
+  "include": ["./scripts", "./infra", "./contracts"],
+  "files": []
+}

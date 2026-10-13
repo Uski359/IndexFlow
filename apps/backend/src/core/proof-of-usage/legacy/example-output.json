@@ -1,0 +1,15 @@
+{
+  "eligible": true,
+  "metadata": {
+    "walletAddress": "0x1234567890abcdef1234567890abcdef12345678",
+    "timeframeDays": 30,
+    "minimumInteractions": 5,
+    "minimumActiveDays": 3,
+    "observedInteractions": 11,
+    "activeDays": 4,
+    "reason": "Interacted 11 times across 4 different days",
+    "sourceQueryIdentifiers": [
+      "core:queries:recentInteractions"
+    ]
+  }
+}

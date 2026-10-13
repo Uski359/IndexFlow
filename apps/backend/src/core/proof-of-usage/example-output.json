@@ -1,0 +1,9 @@
+{
+  "eligible": true,
+  "metrics": {
+    "txCount": 12,
+    "activeDays": 4,
+    "timeframeDays": 30
+  },
+  "reason": "Eligible with 12 interactions across 4 active days in 30 days."
+}

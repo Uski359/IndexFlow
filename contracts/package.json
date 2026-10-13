@@ -1,0 +1,36 @@
+{
+  "name": "@indexflow/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.ts --network sepolia",
+    "devnet:bootstrap": "hardhat run scripts/devnet-bootstrap.ts --network localhost",
+    "update:params": "hardhat run scripts/update-parameters.ts",
+    "dev": "hardhat node",
+    "lint": "solhint 'src/**/*.sol'",
+    "typecheck": "tsc --noEmit",
+    "coverage": "hardhat coverage"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.1"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@types/chai": "^4.3.10",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^26.2.0",
+    "chai": "^4.3.10",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.8.1",
+    "hardhat": "^2.27.0",
+    "solhint": "^3.6.2",
+    "solidity-coverage": "^0.8.13",
+    "ts-node": "^10.9.2",
+    "typechain": "^8.2.0",
+    "typescript": "^5.8.3"
+  }
+}

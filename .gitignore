@@ -1,58 +1,17 @@
-﻿# Node / TypeScript
-node_modules/
+﻿node_modules/
+.next/
 dist/
 build/
-.next/
-.turbo/
-coverage/
-*.tsbuildinfo
-
-# Env files
-.env
-.env.*
-
-# Logs
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Hardhat
 artifacts/
 cache/
-
-# Python
-__pycache__/
-*.pyc
+coverage/
+.turbo/
+*.tsbuildinfo
+.env
+.env.local
+*.db
+*.log
+*_log.json
+*.zip
+*.pdf
 .venv/
-
-# Tooling
-.devcontainer/
-.husky/
-
-# Local subprojects
-alchemy-demo/
-backend/
-brand/
-contracts/
-docs/
-frontend/
-frontend-new/
-iflw-mini-lp-test/
-index-node/
-indexflow-backend/
-indexflow-dao-lite/
-indexflow-frontend/
-indexflow-governance-scaffold/
-indexflow-landing/
-indexflow-poc/
-microservices/
-monitoring/
-ops/
-packages/
-scripts/
-
-# Misc
-.DS_Store
-Thumbs.db

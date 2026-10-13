@@ -1,0 +1,92 @@
+import type {
+  CampaignCommentaryResponse,
+  CampaignInsightsResponse,
+  CampaignRunResponse,
+  CommentaryV1,
+  CoreOutputV1,
+  InsightV1,
+  UsageWindow
+} from './types';
+
+export type ProofWindowType = 'last_7_days' | 'last_30_days';
+
+export type ProofDataSource = 'commentary' | 'insights' | 'core';
+
+export type ProofWalletRow = {
+  wallet: string;
+  display_name?: string | null;
+  input_source?: 'ens' | 'address';
+  ens_cached?: boolean;
+  output?: CoreOutputV1;
+  insights?: InsightV1;
+  commentary?: CommentaryV1;
+  cached_core?: boolean;
+  cached_insights?: boolean;
+  cached_commentary?: boolean;
+  source: ProofDataSource;
+  error?: string;
+};
+
+export type ProofSummary = {
+  total: number;
+  verified_true: number;
+  verified_false: number;
+  verified_rate: number;
+  avg_tx_count: number;
+  avg_days_active: number;
+  avg_unique_contracts: number;
+  suspected_farm_count: number;
+  suspected_farm_rate: number;
+  avg_score: number;
+};
+
+export type ProofEvaluateResponse = {
+  output: CoreOutputV1;
+  cached: boolean;
+};
+
+export type ProofInsightsResponse = {
+  insights: InsightV1;
+  cached: boolean;
+};
+
+export type ProofCommentaryResponse = {
+  commentary: CommentaryV1;
+  cached: boolean;
+};
+
+export type ProofCampaignCommentaryResponse = CampaignCommentaryResponse;
+export type ProofCampaignInsightsResponse = CampaignInsightsResponse;
+export type ProofCampaignRunResponse = CampaignRunResponse;
+
+export type NormalizedWallets = {
+  inputs: Array<{
+    raw: string;
+    kind: 'address' | 'ens' | 'invalid';
+    normalized?: string;
+  }>;
+  addresses: string[];
+  ensNames: string[];
+  invalid: string[];
+  mapping: Record<string, { display: string; address?: string }>;
+};
+
+export type ProofRunResult = {
+  rows: ProofWalletRow[];
+  source: ProofDataSource;
+};
+
+export type ProofRunProgress = {
+  processed: number;
+  total: number;
+  rows: ProofWalletRow[];
+};
+
+export type ProofRunOptions = {
+  wallets: string[];
+  campaignId: string;
+  window: UsageWindow;
+  criteriaSetId?: string;
+  signal?: AbortSignal;
+  onProgress?: (progress: ProofRunProgress) => void;
+};

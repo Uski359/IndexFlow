@@ -4,10 +4,8 @@
     "private": true,
     "description": "IndexFlow monorepo for decentralized data indexing and search protocol",
     "workspaces": [
-        "indexflow-frontend",
-        "indexflow-backend",
-        "index-node",
-        "contracts"
+        "apps/*",
+        "packages/*"
     ],
     "engines": {
         "node": ">=20"
@@ -15,18 +13,19 @@
     "scripts": {
         "prepare": "husky install",
         "format": "prettier --write .",
-        "lint": "npm run lint --workspace contracts && npm run lint --workspace index-node && npm run lint --workspace indexflow-frontend && npm run lint --workspace indexflow-backend",
-        "typecheck": "npm run typecheck --workspace contracts && npm run typecheck --workspace index-node && npm run typecheck --workspace indexflow-frontend && npm run typecheck --workspace indexflow-backend",
-        "test": "npm run test --workspace contracts && npm run test --workspace index-node && npm run test --workspace indexflow-frontend && npm run test --workspace indexflow-backend",
-        "dev:index-node": "npm --workspace index-node run dev",
-        "dev:frontend": "npm --workspace indexflow-frontend run dev",
-        "dev:contracts": "npm --workspace contracts run dev",
-        "dev:backend": "pnpm --dir indexflow-backend run dev",
-        "build:index-node": "npm --workspace index-node run build",
-        "build:frontend": "npm --workspace indexflow-frontend run build",
-        "build:contracts": "npm --workspace contracts run build",
-        "build:backend": "npm --workspace indexflow-backend run build",
-        "indexer:listener:all": "npm --workspace indexflow-backend run indexer:listener:all",
+        "build": "pnpm --filter \"./apps/*\" --filter \"./packages/*\" --if-present run build",
+        "lint": "pnpm --dir contracts run lint && pnpm --dir index-node run lint && pnpm --dir apps/playground run lint && pnpm --dir apps/backend run lint",
+        "typecheck": "pnpm --filter \"./apps/*\" --filter \"./packages/*\" --if-present run typecheck",
+        "test": "pnpm --dir contracts run test && pnpm --dir index-node run test && pnpm --dir apps/playground run test && pnpm --dir apps/backend run test",
+        "dev:index-node": "pnpm --dir index-node run dev",
+        "dev:frontend": "pnpm --dir apps/playground run dev",
+        "dev:contracts": "pnpm --dir contracts run dev",
+        "dev:backend": "pnpm --dir apps/backend run dev",
+        "build:index-node": "pnpm --dir index-node run build",
+        "build:frontend": "pnpm --dir apps/playground run build",
+        "build:contracts": "pnpm --dir contracts run build",
+        "build:backend": "pnpm --dir apps/backend run build",
+        "indexer:listener:all": "pnpm --dir apps/backend run indexer:listener:all",
         "sync:contracts": "node scripts/sync-contracts.mjs",
         "stack:start": "powershell -ExecutionPolicy Bypass -File ./scripts/start-all.ps1",
         "demo": "docker compose up --build",
@@ -55,7 +54,7 @@
         "openai": "^6.7.0",
         "postgres-array": "^3.0.4"
     },
-    "main": "compare.js",
+    "main": "scripts/legacy/compare.js",
     "directories": {
         "doc": "docs"
     },

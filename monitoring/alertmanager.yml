@@ -1,0 +1,26 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ["alertname", "chainId"]
+  group_wait: 10s
+  group_interval: 2m
+  repeat_interval: 1h
+  receiver: "team-email"
+
+receivers:
+  - name: "team-email"
+    email_configs:
+      - to: "alerts@example.com"
+        from: "alertmanager@example.com"
+        smarthost: "smtp.example.com:587"
+        auth_username: "alertmanager@example.com"
+        auth_identity: "alertmanager@example.com"
+        auth_password: "REPLACE_ME"
+
+inhibit_rules:
+  - source_matchers:
+      - severity="critical"
+    target_matchers:
+      - severity="warning"
+    equal: ["alertname", "chainId"]
