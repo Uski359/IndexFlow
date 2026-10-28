@@ -2,14 +2,14 @@
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "my-custom-tools",
   "version": "1.0.0",
-  "description": "Gelişmiş Claude Code eklentileri, MCP sunucuları ve hafıza/model araçları koleksiyonu",
+  "description": "Advanced collection of Claude Code plugins, MCP servers, and memory/routing tools",
   "owner": {
-    "name": "Umut"
+    "name": "Uski"
   },
   "plugins": [
     {
       "name": "laya-router",
-      "description": "Sorunun karmaşıklığına göre Haiku, Sonnet veya Opus modellerine otomatik geçiş yapan dinamik router",
+      "description": "Dynamic model router that automatically switches between Haiku, Sonnet, and Opus models based on prompt complexity",
       "version": "1.0.0",
       "source": {
         "source": "github",
@@ -19,7 +19,7 @@
     },
     {
       "name": "claude-mem",
-      "description": "Oturumlar arası proje geçmişini ve alınan mimari kararları vektör veritabanında saklayan otomatik hafıza eklentisi",
+      "description": "Persistent memory plugin storing architectural decisions and project context across sessions using a vector database",
       "version": "1.0.0",
       "source": {
         "source": "github",
@@ -29,7 +29,7 @@
     },
     {
       "name": "headroom",
-      "description": "Terminal ve log çıktılarını LLM'e gitmeden yerelde sıkıştırarak %50 token tasarrufu sağlayan eklenti",
+      "description": "Local context compression plugin reducing token consumption by compressing terminal and log outputs",
       "version": "1.0.0",
       "source": {
         "source": "npm",
@@ -39,7 +39,7 @@
     },
     {
       "name": "frontend-design",
-      "description": "Modern UI/UX standartlarında Tailwind CSS ve bileşen odaklı frontend kodlama kuralları",
+      "description": "Official Anthropic design guidance plugin for modern UI/UX, Tailwind CSS, and component-driven frontend development",
       "version": "1.1.0",
       "source": {
         "source": "github",
@@ -50,7 +50,7 @@
     },
     {
       "name": "playwright",
-      "description": "Headless browser otomasyonu, UI/E2E testleri ve web scraping için MCP sunucu entegrasyonu",
+      "description": "MCP server integration for browser automation, end-to-end UI testing, and web scraping",
       "version": "1.0.0",
       "source": {
         "source": "npm",
