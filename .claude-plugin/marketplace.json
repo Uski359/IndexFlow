@@ -28,16 +28,6 @@
       "category": "memory"
     },
     {
-      "name": "headroom",
-      "description": "Local context compression plugin reducing token consumption by compressing terminal and log outputs",
-      "version": "1.0.0",
-      "source": {
-        "source": "github",
-        "repo": "headroom/headroom"
-      },
-      "category": "optimization"
-    },
-    {
       "name": "frontend-design",
       "description": "Official Anthropic design guidance plugin for modern UI/UX, Tailwind CSS, and component-driven frontend development",
       "version": "1.1.0",
