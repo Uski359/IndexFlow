@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Advanced collection of Claude Code plugins, MCP servers, and memory/routing tools",
   "owner": {
-    "name": "Uski"
+    "name": "Umut"
   },
   "plugins": [
     {
@@ -32,8 +32,8 @@
       "description": "Local context compression plugin reducing token consumption by compressing terminal and log outputs",
       "version": "1.0.0",
       "source": {
-        "source": "npm",
-        "package": "headroom-cli"
+        "source": "github",
+        "repo": "headroom/headroom"
       },
       "category": "optimization"
     },
