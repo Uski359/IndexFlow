@@ -32,8 +32,8 @@
       "description": "Terminal ve log çıktılarını LLM'e gitmeden yerelde sıkıştırarak %50 token tasarrufu sağlayan eklenti",
       "version": "1.0.0",
       "source": {
-        "source": "github",
-        "repo": "headroom-cli/headroom"
+        "source": "npm",
+        "package": "headroom-cli"
       },
       "category": "optimization"
     },
